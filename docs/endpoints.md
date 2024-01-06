@@ -13,15 +13,30 @@ This document provides a list of endpoints available in our backend server.
 | /books/files/[book_id] | GET | Request book file | `GET /book/files/[book_id]` |
 
 
-
-
-
-<!-- 
-
-### Books
+### User
 
 | Endpoint | HTTP Method | Description | Full Command |
 |----------|-------------|-------------|--------------| 
-| /books | GET | Request all books meta data | `GET /books` | 
+| /signup | POST | create new user | `POST /signup` | 
+| /confirm-signup/:confirmToken | PATCH | Confirm signup after sending confirmation token via email | `PATCH /confirm-signup/:confirmToken` | 
+| /login | POST | login the user | `POST /login` | 
+| /logout | POST | logout the user | `POST /logout` | 
+| /forgot-password | POST | Request that user forgot his password | `POST /forgot-password` | 
+| /reset-password/:resetToken | PATCH | Reset password with reset token which sent by email | `PATCH /reset-password/:resetToken` | 
 
--->
+### User but not crucial endpoints aka next phase
+| Endpoint | HTTP Method | Description | Full Command |
+|----------|-------------|-------------|--------------| 
+| /change-email | POST | Request to change user email | `POST /change-email` | 
+| /reset-email/:resetToken | PATCH | Reset user email by the sended token to current email | `PATCH /reset-email/:resetToken` | 
+| /update-user | PATCH | Update user non-crucial data | `PATCH /update-user` | 
+| /update-password | PATCH | Request to change user password while he still remember the current password | `PATCH /update-password` | 
+| /delete-user | DELETE | Request to delete the user account | `DELETE /delete-user` | 
+
+### ML endpoints 
+
+```md
+  Still not clear like
+    - chapters summary
+    - ML questions and answers
+```
