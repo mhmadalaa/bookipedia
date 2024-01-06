@@ -40,3 +40,13 @@ This document provides a list of endpoints available in our backend server.
     - chapters summary
     - ML questions and answers
 ```
+
+### Images, Icons
+Images and icons in the application will be served from `/public` directory by get it by image/icon name.
+
+| Endpoint | HTTP Method | Description | Full Command |
+|----------|-------------|-------------|--------------| 
+| /public/[image.jpg] | GET | Request image or icon | `GET /public/[image.jpg]` |
+
+
+That's an elementary solution for this problem, and if images and icons getting increased we will make a saving pictures service to work efficiently.
