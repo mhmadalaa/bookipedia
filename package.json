@@ -1,0 +1,19 @@
+{
+  "name": "bookipedia",
+  "version": "1.0.0",
+  "description": "book reader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lilhind/bookipedia.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lilhind/bookipedia/issues"
+  },
+  "homepage": "https://github.com/lilhind/bookipedia#readme"
+}
