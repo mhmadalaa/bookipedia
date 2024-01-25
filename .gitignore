@@ -1,0 +1,16 @@
+# ENVIRONMENT
+config.env
+.env
+.idea
+
+# NODE
+node_modules
+
+# MANAGE WORKFLOW
+makefile
+todo
+
+# TEMPORARY CODE
+trashcode
+
+.vscode
