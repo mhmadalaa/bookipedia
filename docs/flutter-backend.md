@@ -3,7 +3,6 @@
 This document provides a list of endpoints available in our backend server.
 
 ### Books
-
 | Endpoint | HTTP Method | Description | Full Command |
 |----------|-------------|-------------|--------------|
 | /books | GET | Request all books meta data | `GET /books` |
@@ -14,7 +13,6 @@ This document provides a list of endpoints available in our backend server.
 
 
 ### User
-
 | Endpoint | HTTP Method | Description | Full Command |
 |----------|-------------|-------------|--------------| 
 | /signup | POST | create new user | `POST /signup` | 
@@ -24,22 +22,10 @@ This document provides a list of endpoints available in our backend server.
 | /forgot-password | POST | Request that user forgot his password | `POST /forgot-password` | 
 | /reset-password/:resetToken | PATCH | Reset password with reset token which sent by email | `PATCH /reset-password/:resetToken` | 
 
-### User but not crucial endpoints aka next phase
+### AI Endpoints 
 | Endpoint | HTTP Method | Description | Full Command |
 |----------|-------------|-------------|--------------| 
-| /change-email | POST | Request to change user email | `POST /change-email` | 
-| /reset-email/:resetToken | PATCH | Reset user email by the sended token to current email | `PATCH /reset-email/:resetToken` | 
-| /update-user | PATCH | Update user non-crucial data | `PATCH /update-user` | 
-| /update-password | PATCH | Request to change user password while he still remember the current password | `PATCH /update-password` | 
-| /delete-user | DELETE | Request to delete the user account | `DELETE /delete-user` | 
-
-### ML endpoints 
-
-```md
-  Still not clear like
-    - chapters summary
-    - ML questions and answers
-```
+| / | POST | Request to change user email | `POST /change-email`| 
 
 ### Images, Icons
 Images and icons in the application will be served from `/public` directory by get it by image/icon name.
@@ -50,3 +36,14 @@ Images and icons in the application will be served from `/public` directory by g
 
 
 That's an elementary solution for this problem, and if images and icons getting increased we will make a saving pictures service to work efficiently.
+
+### User but not crucial endpoints aka next phase
+| Endpoint | HTTP Method | Description | Full Command |
+|----------|-------------|-------------|--------------| 
+| /change-email | POST | Request to change user email | `POST /change-email` | 
+| /reset-email/:resetToken | PATCH | Reset user email by the sended token to current email | `PATCH /reset-email/:resetToken` | 
+| /update-user | PATCH | Update user non-crucial data | `PATCH /update-user` | 
+| /update-password | PATCH | Request to change user password while he still remember the current password | `PATCH /update-password` | 
+| /delete-user | DELETE | Request to delete the user account | `DELETE /delete-user` | 
+
+
