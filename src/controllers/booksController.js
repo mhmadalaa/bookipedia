@@ -106,7 +106,7 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
     const chuncks = await client.db().collection('fs.chunks');
     const fileId = new ObjectId(req.params.id);
     await files.deleteOne({ _id: fileId });
-    await chuncks.deleteMany({ _id: fileId });
+    await chuncks.deleteMany({ files_id: fileId });
     res.status(204).json({
         message: 'Deleted Successfully'
     })
