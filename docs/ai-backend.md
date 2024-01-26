@@ -1,6 +1,13 @@
 # Endpoints
 
-### REQuests from Backend-API to AI-API
+## REQuests from Backend-API to AI-API
+
+#### Questions to AI
+
+| Endpoint                        | HTTP Method | Description                                        | Full Command                          |
+| ------------------------------- | ----------- | -------------------------------------------------- | ------------------------------------- |
+| /document/question/[document_id] | GET         | ask question on a user document                    | `GET /document/question/[document_id]` |
+| /book/question/[book_id]         | GET         | ask question on specific book for the current user | `GET /book/question/[book_id]`         |
 
 #### Documents (OCR)
 
@@ -14,7 +21,7 @@
 | --------- | ----------- | -------------------------------------------------------------------------------------------- | --------------- |
 | /text/tot | GET         | Request to apply text to speech to the sended text and stream thre returned audio to flutter | `GET /text/tot` |
 
-### REQuests from AI-API to Backend-API
+## REQuests from AI-API to Backend-API
 
 | Endpoint                              | HTTP Method | Description                                                 | Full Command                                |
 | ------------------------------------- | ----------- | ----------------------------------------------------------- | ------------------------------------------- |
