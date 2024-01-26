@@ -1,4 +1,4 @@
-# AI Endpoints
+# AI Endpoints `/ai`
 
 ### Books
 
