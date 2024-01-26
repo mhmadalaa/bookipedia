@@ -27,12 +27,22 @@ This document provides a list of endpoints available in our backend server.
 |----------|-------------|-------------|--------------| 
 | / | POST | Request to change user email | `POST /change-email`| 
 
+### Notes
+| Endpoint | HTTP Method | Description | Full Command |
+|----------|-------------|-------------|--------------| 
+| /notes/[book_id] | POST | Request to store a new note in this book for this user | `POST /notes/[book_id]`| 
+| /notes/[book_id] | GET | Request to store get a specific note in this book, page coordinates for this user | `GET /notes/[book_id]`| 
+| /notes/[book_id] | DELETE | Request to delete specific not in this book for this user | `DELETE /notes/[book_id]`| 
+| /notes/[book_id]/all | GET | Request to get all notes in this book for this user | `GET /notes/[book_id]/all`| 
+
+
 ### Images, Icons
 Images and icons in the application will be served from `/public` directory by get it by image/icon name.
 
 | Endpoint | HTTP Method | Description | Full Command |
 |----------|-------------|-------------|--------------| 
 | /public/[image.jpg] | GET | Request image or icon | `GET /public/[image.jpg]` |
+
 
 
 That's an elementary solution for this problem, and if images and icons getting increased we will make a saving pictures service to work efficiently.
