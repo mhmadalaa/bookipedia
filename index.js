@@ -1,14 +1,6 @@
-const express = require('express');
+const app = require('./src/app');
 
 
-
-
-const auth = require('./src/routers/auth');
-
-
-const app = express();
-app.use(express.json());
-app.use('/auth', auth)
 app.listen(3000, () => {
     console.log('server is running on port 3000...')
 });
