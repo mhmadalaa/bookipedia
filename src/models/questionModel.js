@@ -7,21 +7,24 @@ const questionSchema = new mongoose.Schema({
     required: [true, 'there must be a question sent'],
   },
   answer: {
+    // not required from client it's ai-answer-filed
     type: String,
-    required: [true, 'there must be an answer'],
   },
   document: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Document',
+    type: String, // FIXME: temporary
+    // type: mongoose.Schema.ObjectId,
+    // ref: 'Document',
   },
   book: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Book',
+    type: String, // FIXME: temporary
+    // type: mongoose.Schema.ObjectId,
+    // ref: 'Book',
   },
   user: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-    required: [true, 'Question must belong to a user!'],
+    type: String, // FIXME: temporary
+    // type: mongoose.Schema.ObjectId,
+    // ref: 'User',
+    // required: [true, 'Question must belong to a user!'],
   },
   createdAt: {
     type: Date,
@@ -29,12 +32,16 @@ const questionSchema = new mongoose.Schema({
   },
 });
 
-questionSchema.pre('save', function (next) {
-  if (!this.document && !this.book) {
+questionSchema.pre('save', async function (next) {
+  // to save either a book or a document with each question
+  // and never accept (book and document) or (neither document or book)
+  // because as a logic each question must belong to a refrence and must be one refrence
+  const document = this.document ? 1 : 0;
+  const book = this.book ? 1 : 0;
+  if (!(document ^ book)) {
     return next(
       new AppError(
-        'Please provide the book or the document id! and resend the question',
-        404,
+        'Please provide one refrence either for book or document! and resend the question',
       ),
     );
   }
