@@ -1,18 +1,19 @@
-// question on document
-// question on book
-// then stream the response
+const catchAsync = require('../utils/catchAsync');
+const questionFiltering = require('../utils/questionFiltering');
+const Question = require('./../models/questionModel');
 
-// document model?
-// book model?
+exports.SendQuestion = catchAsync(async (req, res) => {
+  /*
+  TODO: 
+  1. send question to AI
+  2. stream the response to client
+  3. save the result to Question model
+  */
+ 
+  const question = await Question.create(questionFiltering(req.body));
 
-// question model
-
-// fetch the request and make it more informative
-// make another request to ai
-// stream response if it done with ai-api
-// return invalid response
-
-//TODO:
-// get oepnai-api key from discord to secrets
-// link db to .env and push it
-// change branch name and specifiy it to questions
+  res.status(202).json({
+    message: 'success question sent',
+    Question: question,
+  });
+});
