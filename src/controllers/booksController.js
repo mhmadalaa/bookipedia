@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
+const {GridfsConnection} = require('./../connections.js');
 const multer = require('multer');
 const { GridFSBucket, MongoClient } = require('mongodb');
 const catchAsync = require('./../utils/catchAsync');
 const { ObjectId } = require('bson');
 
-const db = mongoose.connection;
-const bucket = new GridFSBucket(db);
 
-const url = process.env.DATABASE;
+const bucket = new GridFSBucket(GridfsConnection);
+
+const url = process.env.GRIDFS_URI;
 const client = new MongoClient(url);
 
 const storage = multer.memoryStorage();
@@ -29,9 +29,9 @@ exports.uploadBook = (req, res, next) => {
       res.json({ id: id, filename: filename });
     });
 
-    /*  uploadStream.on('error', (error) => {
-             res.status(500).json({ error: 'Error uploading file to GridFS' });
-         }); */
+    uploadStream.on('error', (error) => {
+      res.status(500).json({ error: 'Error uploading file to GridFS' });
+    });
   } catch (error) {
     res.status(error.status).json({ error });
   }

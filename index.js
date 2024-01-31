@@ -1,22 +1,14 @@
-const mongoose = require('mongoose');
+require('dotenv').config();
+const {BookepidiaConnection ,GridfsConnection} = require('./src/connections.js');
 const app = require('./src/app');
+
 
 //to handle unhandled promise rejections
 process.on('unhandledRejection', (error) => {
   console.log('unhandledRejection', error.message);
 });
 
-// CONNECT TO DATABASE
-const url = process.env.DATABASE;
-mongoose
-  .connect(url)
-  .then((con) => {
-    console.log('DB connecting successful...');
-  })
-  .catch((err) => {
-    console.log('DB connection ERROR!!');
-    console.log(err);
-  });
+
 
 app.get('/', (req, res) => {
   // This code will be executed when a GET request is made to the base URL
@@ -25,8 +17,7 @@ app.get('/', (req, res) => {
 
 // START SERVER
 app.listen(3000, () => {
-  console.log('server is running on port 3000...');
+  console.log(`server is running on port ${process.env.PORT}...`);
 });
 
-// Allow Vercel to turn Express into a serverless function
-module.exports = app;
+

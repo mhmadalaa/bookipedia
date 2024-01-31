@@ -1,4 +1,4 @@
-require('dotenv').config();
+
 
 const express = require('express');
 const morgan = require('morgan');
@@ -18,7 +18,7 @@ app.use(
   }),
 );
 
-// APP ROUTERS
+// APP ROUTERS`
 app.use('/', booksRouter);
 app.use('/auth', auth);
 
