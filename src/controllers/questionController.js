@@ -1,19 +1,20 @@
+const { pipeline } = require('node:stream/promises');
 const catchAsync = require('../utils/catchAsync');
 const questionFiltering = require('../utils/questionFiltering');
 const Question = require('./../models/questionModel');
+const openai = require('./../config/openaiConfig');
 
-exports.SendQuestion = catchAsync(async (req, res) => {
-  /*
-  TODO: 
-  1. send question to AI
-  2. stream the response to client
-  3. save the result to Question model
-  */
- 
-  const question = await Question.create(questionFiltering(req.body));
-
-  res.status(202).json({
-    message: 'success question sent',
-    Question: question,
+exports.askQuestion = catchAsync(async (req, res) => {
+  const chatCompletion = await openai.chat.completions.create({
+    messages: [{ role: 'user', content: req.body.question }],
+    model: 'gpt-3.5-turbo',
+    // stream: true,
   });
+
+  if (chatCompletion) {
+    req.body.answer = chatCompletion.choices[0]?.message?.content || '';
+    await Question.create(questionFiltering(req.body));
+  }
+
+  await pipeline(chatCompletion.choices[0].message.content, res);
 });
