@@ -5,7 +5,6 @@ This document provides a list of endpoints available in our backend server.
 ### Books `/books`
 | Endpoint | HTTP Method | Description | Full Command |
 |----------|-------------|-------------|--------------|
-
 | /upload | POST | Upload book file | `POST /upload` |
 | /uploadedbooks/:id | GET | Request book file | `GET /uploadedbooks/:id ` |
 | /books | GET | Request all books meta data | `GET /books` |
