@@ -9,12 +9,13 @@ const chSummarySchema = new mongoose.Schema({
     required: [true, 'provide the content of the summary'],
   },
   book: {
-    type: String, // FIXME: temporary
-    // type: mongoose.Schema.ObjectId,
-    // ref: 'Book',
+    // type: String, // FIXME: temporary
+    type: mongoose.Schema.ObjectId,
+    ref: 'Book',
     required: [true, 'please specifiy the book.'],
   },
   chapter: {
+    // TODO: the chapter should be unique for each book
     type: Number,
     required: [true, 'please specifiy the chapter of the book'],
   },
