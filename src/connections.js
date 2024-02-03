@@ -14,10 +14,10 @@ const makeNewConnection = (uri, databaseName) => {
 
 };
 
-const BookepidiaConnection = makeNewConnection(process.env.BOOKEPDIA_URI , 'Bookepidia Database');
-const GridfsConnection = makeNewConnection(process.env.GRIDFS_URI , 'Gridfs Database');
+/* const BookepidiaConnection = makeNewConnection(process.env.DATABASE , 'Bookepidia Database');
+const GridfsConnection = makeNewConnection(process.env.FILES_DATABASE , 'Gridfs Database');
 
 module.exports = {
   BookepidiaConnection ,
   GridfsConnection
-};
+}; */

@@ -1,13 +1,14 @@
-const {GridfsConnection} = require('./../connections.js');
 const multer = require('multer');
 const { GridFSBucket, MongoClient } = require('mongodb');
 const catchAsync = require('./../utils/catchAsync');
 const { ObjectId } = require('bson');
+const mongoose = require('mongoose');
 
 
-const bucket = new GridFSBucket(GridfsConnection);
+const DB = mongoose.connection;
+const bucket = new GridFSBucket(DB);
 
-const url = process.env.GRIDFS_URI;
+const url = process.env.DATABASE;
 const client = new MongoClient(url);
 
 const storage = multer.memoryStorage();
