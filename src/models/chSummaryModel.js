@@ -10,6 +10,7 @@ const chSummarySchema = new mongoose.Schema({
   },
   book: {
     // type: String, // FIXME: temporary
+    // TODO: ref in mongoose
     type: mongoose.Schema.ObjectId,
     ref: 'Book',
     required: [true, 'please specifiy the book.'],
