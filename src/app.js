@@ -1,9 +1,8 @@
-
-
 const express = require('express');
 const morgan = require('morgan');
 
 const auth = require('./routers/auth');
+const filesRouter = require('./routers/filesRouter');
 const booksRouter = require('./routers/booksRouter');
 
 const app = express();
@@ -19,7 +18,8 @@ app.use(
 );
 
 // APP ROUTERS`
-app.use('/', booksRouter);
+app.use('/files', filesRouter);
+app.use('/books' , booksRouter);
 app.use('/auth', auth);
 
 // NOT FOUND ROUTERS ERROR HANDLER

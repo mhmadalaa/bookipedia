@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');  
+const slugify = require('slugify');
+const {BookepidiaConnection} = require('./../connections'); 
+
 
 const bookSchema = new mongoose.Schema({
   title: {
@@ -25,16 +27,11 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     require:[true, 'You must provide the number of chapters'] ,
   },
-  slug: String
-  /* file_id : {
+  slug: String ,
+  file_id : {
     type : mongoose.Schema.ObjectId  ,
-    ref :'fs.files'
-  } */
-  /*   file_id: {
-    type : String,
-    required :[true ,'You must provide the file id']
-  } */
-
+    ref :'Fs.file'
+  }
 });
 
 bookSchema.pre('save' ,function(next) {
@@ -42,28 +39,8 @@ bookSchema.pre('save' ,function(next) {
   next();
 });
 
-const BookModel = mongoose.model('Book', bookSchema);
-
-
-const main = async () => {
-  try {
-  /* const Book = await BookModel.create ({
-    title :'Js Book' ,
-    author :'John' ,
-    pages:15 ,
-    size :100 ,
-    chapters:2,
-    file_id:'65b9456f2d3142a70a28483a'
-  }); */
-    const Book = await BookModel.find();
-    console.log(Book);
-  }
-  catch (err) {
-    console.log(err);
-  }
-};
-
-main();
+const BookModel = BookepidiaConnection.model('Book', bookSchema);
+/* console.log(mongoose.models); */
 
 
 module.exports = BookModel;
