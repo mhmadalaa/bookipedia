@@ -1,8 +1,17 @@
 const { pipeline } = require('node:stream/promises');
 const catchAsync = require('../utils/catchAsync');
-const questionFiltering = require('../utils/questionFiltering');
 const Question = require('./../models/questionModel');
 const openai = require('./../config/openaiConfig');
+
+const questionFiltering = (body) => {
+  return {
+    question: body.question,
+    answer: body.answer,
+    document: body.document,
+    book: body.book,
+    user: body.user,
+  };
+};
 
 exports.askQuestion = catchAsync(async (req, res) => {
   const chatCompletion = await openai.chat.completions.create({
