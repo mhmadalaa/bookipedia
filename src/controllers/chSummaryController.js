@@ -11,7 +11,28 @@ const chapterSummaryFiltering = (req) => {
   };
 };
 
-exports.createChapterSummary = catchAsync(async (req, res) => {
+const checkChapterAvailability = (req, res) => {
+  // TODO: get the book chapters from book model
+  //       const bookChapters = await BookModel.findById(req.params.book_id);
+  const bookChapters = 15; // FIXME: assume that all books has `15` chapters until we connect with book model
+
+  // case of unavilable chapter
+  if (req.params.chapter <= 0 || req.params.chapter > bookChapters) {
+    res.status(404).json({
+      message: 'fail',
+      content: `That is not an avilable chapter in this book, availabe from ${1} to ${bookChapters}`,
+    });
+
+    return 0;
+  }
+
+  return 1;
+};
+
+exports.createChapterSummary = catchAsync(async (req, res, next) => {
+  // check if this chapter available in this book
+  if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model
+
   const summary = await ChapterSummary.create(chapterSummaryFiltering(req));
 
   res.status(202).json({
@@ -38,17 +59,8 @@ exports.updateChapterSummary = catchAsync(async (req, res) => {
 });
 
 exports.getChapterSummary = catchAsync(async (req, res, next) => {
-  const bookChapters = 15; // FIXME: assume that all books has `15` chapters until we connect with book model
-
-  // case of unavilable chapter
-  if (req.params.chapter <= 0 || req.params.chapter > bookChapters) {
-    return next(
-      new AppError(
-        `That is not an avilable chapter in this book, availabe from ${1} to ${bookChapters}`,
-        404,
-      ),
-    );
-  }
+  // check if this chapter available in this book
+  if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model
 
   // query book chapters summary
   const summary = await ChapterSummary.findOne({

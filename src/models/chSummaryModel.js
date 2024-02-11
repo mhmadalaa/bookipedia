@@ -31,25 +31,6 @@ const chSummarySchema = new mongoose.Schema({
 // each chapter in the book has only one summary stored
 chSummarySchema.index({ book: 1, chapter: 1 }, { unique: true });
 
-chSummarySchema.pre('save', async function (next) {
-  // TODO: get the book chapters from book model
-  //       const bookChapters = await BookModel.findById(this.book);
-
-  const bookChapters = 15; // temporary
-
-  // case of unavilable chapter
-  if (this.chapter <= 0 || this.chapter > bookChapters) {
-    return next(
-      new AppError(
-        `That is not an avilable chapter in this book, availabe from ${1} to ${bookChapters}`,
-        404,
-      ),
-    );
-  }
-
-  next();
-});
-
 const ChapterSummary = mongoose.model('ChapterSummary', chSummarySchema);
 
 module.exports = ChapterSummary;
