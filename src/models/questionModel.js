@@ -11,20 +11,17 @@ const questionSchema = new mongoose.Schema({
     type: String,
   },
   document: {
-    type: String, // FIXME: temporary
-    // type: mongoose.Schema.ObjectId,
-    // ref: 'Document',
+    type: mongoose.Schema.ObjectId,
+    ref: 'Document', // TODO: ref in mongoose
   },
   book: {
-    type: String, // FIXME: temporary
-    // type: mongoose.Schema.ObjectId,
-    // ref: 'Book',
+    type: mongoose.Schema.ObjectId,
+    ref: 'Book', // TODO: ref in mongoose
   },
   user: {
-    type: String, // FIXME: temporary
-    // type: mongoose.Schema.ObjectId,
-    // ref: 'User',
-    // required: [true, 'Question must belong to a user!'],
+    type: mongoose.Schema.ObjectId,
+    ref: 'User', // TODO: ref in mongoose
+    required: [true, 'Question must belong to a user!'],
   },
   createdAt: {
     type: Date,
@@ -32,10 +29,13 @@ const questionSchema = new mongoose.Schema({
   },
 });
 
-questionSchema.pre('save', async function (next) {
+questionSchema.pre('save', function (next) {
   // to save either a book or a document with each question
   // and never accept (book and document) or (neither document or book)
   // because as a logic each question must belong to a refrence and must be one refrence
+  // so we do xor operation in book and document
+  // if 1 ^ 1 = 0, 0 ^ 0 = 0, 1 ^ 0 = 1, 0 ^ 1 = 1
+  // and that exactly what we need
   const document = this.document ? 1 : 0;
   const book = this.book ? 1 : 0;
   if (!(document ^ book)) {
