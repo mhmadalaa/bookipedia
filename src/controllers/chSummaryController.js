@@ -21,15 +21,15 @@ exports.createChapterSummary = catchAsync(async (req, res) => {
 });
 
 exports.updateChapterSummary = catchAsync(async (req, res) => {
-  const summary = await ChapterSummary.findOneAndUpdate(
+  await ChapterSummary.findOneAndUpdate(
     { book: req.params.book_id, chapter: req.params.chapter },
     chapterSummaryFiltering(req),
   );
 
-  // const summary = await ChapterSummary.findOne({
-  //   book: req.params.book_id,
-  //   chapter: req.params.chapter,
-  // });
+  const summary = await ChapterSummary.findOne({
+    book: req.params.book_id,
+    chapter: req.params.chapter,
+  });
 
   res.status(202).json({
     message: 'success',
