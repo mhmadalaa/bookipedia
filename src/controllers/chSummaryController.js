@@ -2,10 +2,34 @@ const catchAsync = require('../utils/catchAsync');
 const ChapterSummary = require('../models/chSummaryModel');
 const AppError = require('../utils/appError');
 
-// TODO: update ch summary controller
+const chapterSummaryFiltering = (req) => {
+  return {
+    title: req.body.title,
+    content: req.body.content,
+    book: req.params.book_id,
+    chapter: req.params.chapter,
+  };
+};
 
 exports.createChapterSummary = catchAsync(async (req, res) => {
-  const summary = await ChapterSummary.create(req.body);
+  const summary = await ChapterSummary.create(chapterSummaryFiltering(req));
+
+  res.status(202).json({
+    message: 'success',
+    summary,
+  });
+});
+
+exports.updateChapterSummary = catchAsync(async (req, res) => {
+  const summary = await ChapterSummary.findOneAndUpdate(
+    { book: req.params.book_id, chapter: req.params.chapter },
+    chapterSummaryFiltering(req),
+  );
+
+  // const summary = await ChapterSummary.findOne({
+  //   book: req.params.book_id,
+  //   chapter: req.params.chapter,
+  // });
 
   res.status(202).json({
     message: 'success',

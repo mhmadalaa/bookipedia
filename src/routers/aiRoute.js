@@ -10,10 +10,8 @@ router.route('/tts').get(textToSpeechController.textToSpeech);
 
 /*
 TODO: 
-  1. specifiy the role of users who can POST in this route
-  2. take in care the param id of the book in post chapter summary
+  1. specifiy the role of users who can POST and UPDATE summaries
 */
-router.route('/ch-summary').post(chapterSummaryController.createChapterSummary);
 
 router
   .route('/ch-summary/:book_id')
@@ -21,6 +19,8 @@ router
 
 router
   .route('/ch-summary/:book_id/:chapter')
+  .post(chapterSummaryController.createChapterSummary)
+  .patch(chapterSummaryController.updateChapterSummary)
   .get(chapterSummaryController.getChapterSummary);
 
 module.exports = router;
