@@ -15,7 +15,6 @@ const chSummarySchema = new mongoose.Schema({
     required: [true, 'please specifiy the book.'],
   },
   chapter: {
-    // TODO: the chapter should be unique for each book
     type: Number,
     required: [true, 'please specifiy the chapter of the book'],
   },
