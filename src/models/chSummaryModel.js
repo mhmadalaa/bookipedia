@@ -9,7 +9,6 @@ const chSummarySchema = new mongoose.Schema({
     required: [true, 'provide the content of the summary'],
   },
   book: {
-    // type: String, // FIXME: temporary
     // TODO: ref in mongoose
     type: mongoose.Schema.ObjectId,
     ref: 'Book',
@@ -25,6 +24,10 @@ const chSummarySchema = new mongoose.Schema({
     default: Date.now(),
   },
 });
+
+// Define compound index to ensure that
+// each chapter in the book has only one summary stored
+chSummarySchema.index({ book: 1, chapter: 1 }, { unique: true });
 
 const ChapterSummary = mongoose.model('ChapterSummary', chSummarySchema);
 
