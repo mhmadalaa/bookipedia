@@ -14,6 +14,10 @@ TODO:
 */
 
 router
+  .route('/ch-summary/available/:book_id')
+  .get(chapterSummaryController.availableSummaries);
+
+router
   .route('/ch-summary/:book_id')
   .get(chapterSummaryController.bookChaptersSummary);
 

@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const ChapterSummary = require('../models/chSummaryModel');
 const AppError = require('../utils/appError');
+const mongoose = require('mongoose');
 
 const chapterSummaryFiltering = (req) => {
   return {
@@ -105,5 +106,33 @@ exports.bookChaptersSummary = catchAsync(async (req, res) => {
   res.status(200).json({
     message: 'success',
     summaries,
+  });
+});
+
+exports.availableSummaries = catchAsync(async (req, res) => {
+  let chapters = await ChapterSummary.aggregate([
+    {
+      $match: {
+        book: new mongoose.Types.ObjectId(req.params.book_id),
+      },
+    },
+    {
+      $group: {
+        _id: '$chapter', // Group by chapter field
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Exclude _id field
+        chapter: '$_id', // Project the _id field as chapter
+      },
+    },
+  ]);
+
+  chapters = chapters.map((chapter) => chapter.chapter); // Extract the chapter field from the result
+
+  res.status(200).json({
+    message: 'success',
+    chapters,
   });
 });
