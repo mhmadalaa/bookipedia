@@ -10,9 +10,12 @@ const chSummarySchema = new mongoose.Schema({
   },
   book: {
     // TODO: ref in mongoose
+    // index the chapters book field because it's required alot
+    // to search for chapter by the book id
     type: mongoose.Schema.ObjectId,
     ref: 'Book',
     required: [true, 'please specifiy the book.'],
+    index: true,
   },
   chapter: {
     type: Number,
