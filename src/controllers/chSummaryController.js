@@ -41,7 +41,10 @@ exports.createChapterSummary = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateChapterSummary = catchAsync(async (req, res) => {
+exports.updateChapterSummary = catchAsync(async (req, res, next) => {
+  // check if this chapter available in this book
+  if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model
+
   await ChapterSummary.findOneAndUpdate(
     { book: req.params.book_id, chapter: req.params.chapter },
     chapterSummaryFiltering(req),
@@ -51,6 +54,16 @@ exports.updateChapterSummary = catchAsync(async (req, res) => {
     book: req.params.book_id,
     chapter: req.params.chapter,
   });
+
+  // case where AI not generate summary for this chapter
+  if (summary === null) {
+    return next(
+      new AppError(
+        'Sorry, summary for this chapter not avilabe right now.',
+        404,
+      ),
+    );
+  }
 
   res.status(202).json({
     message: 'success',
