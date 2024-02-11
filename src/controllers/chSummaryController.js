@@ -72,6 +72,17 @@ exports.updateChapterSummary = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.deleteChapterSummary = catchAsync(async (req, res, next) => {
+  await ChapterSummary.findOneAndDelete({
+    book: req.params.book_id,
+    chapter: req.params.chapter,
+  });
+
+  res.status(200).json({
+    message: 'success',
+  });
+});
+
 exports.getChapterSummary = catchAsync(async (req, res, next) => {
   // check if this chapter available in this book
   if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model

@@ -10,7 +10,7 @@ router.route('/tts').get(textToSpeechController.textToSpeech);
 
 /*
 TODO: 
-  1. specifiy the role of users who can POST and UPDATE summaries
+  1. specifiy the role of users who can POST, UPDATE, DELETE summaries
 */
 
 router
@@ -23,8 +23,9 @@ router
 
 router
   .route('/ch-summary/:book_id/:chapter')
+  .get(chapterSummaryController.getChapterSummary)
   .post(chapterSummaryController.createChapterSummary)
   .patch(chapterSummaryController.updateChapterSummary)
-  .get(chapterSummaryController.getChapterSummary);
+  .delete(chapterSummaryController.deleteChapterSummary);
 
 module.exports = router;
