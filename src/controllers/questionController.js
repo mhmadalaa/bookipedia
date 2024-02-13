@@ -3,13 +3,17 @@ const catchAsync = require('../utils/catchAsync');
 const Question = require('./../models/questionModel');
 const openai = require('./../config/openaiConfig');
 
-const questionFiltering = (body) => {
+const questionFiltering = (req) => {
+  // FIXME: we will now the requsested user from the pre authenticate middleware
+  //        so we will assume it right now
+  const user = '65bac7fc9e0596718c2769ce';
+
   return {
-    question: body.question,
-    answer: body.answer,
-    document: body.document,
-    book: body.book,
-    user: body.user,
+    question: req.body.question,
+    answer: req.body.answer,
+    document: req.body.document,
+    book: req.body.book,
+    user: user,
   };
 };
 
@@ -22,7 +26,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
 
   if (chatCompletion) {
     req.body.answer = chatCompletion.choices[0]?.message?.content || '';
-    await Question.create(questionFiltering(req.body));
+    await Question.create(questionFiltering(req));
   }
 
   await pipeline(chatCompletion.choices[0].message.content, res);
