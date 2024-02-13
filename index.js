@@ -1,9 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const {bookipediaConnection} = require('./src/connections');
 const app = require('./src/app');
-/* const {GridfsConnection} = require('./src/connections');
- */
-/* require('./src/models/BookModel'); */
 
 
 //to handle unhandled promise rejections
@@ -16,8 +14,8 @@ process.on('unhandledRejection', (error) => {
   .then(() => {
     console.log('Connected to database');
   })
-  .catch(err => console.log(err));
- */
+  .catch(err => console.log(err)); */
+
 
 app.get('/', (req, res) => {
   // This code will be executed when a GET request is made to the base URL

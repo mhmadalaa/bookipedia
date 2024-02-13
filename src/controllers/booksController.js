@@ -1,9 +1,45 @@
-const bookModel = require('./../models/BookModel');
+const filesController = require('./filesController');
 const catchAsync = require('./../utils/catchAsync');
+const BookModel = require('./../models/BookModel');
 
+
+exports.createBook = async(req , res ,next) => {
+  try {
+    const book = await BookModel.create({
+      title :req.body.title ,
+      author :req.body.author ,
+      pages:req.body.pages,
+      size :req.body.size,
+      chapters:req.body.chapters,
+      file_id:req.fileId
+    });
+    res.status(201).json({
+      message :'Created book successfully' ,
+      book
+    });
+  }
+  catch (err) {
+    filesController.deleteFile(req , res , next);
+    next(err);
+  }
+};
+
+exports.deleteBook = catchAsync(async(req , res ,next) => {
+  const book = await BookModel.findByIdAndDelete(req.params.id);
+  if (!book) {
+    return res.status(404).json({
+      message : 'No book found'
+    });
+  }
+  req.fileId = book.file_id;
+  filesController.deleteFile(req , res , next);
+  res.status(204).json({
+    message :'Book is deleted successfully'
+  });
+});
 
 exports.getAllBooks = catchAsync(async(req , res ,next) => {
-  const books = await bookModel.find();
+  const books = await BookModel.find();
   if (books.length === 0) { 
     return res.status(404).json({
       message : 'No books found'
@@ -14,8 +50,9 @@ exports.getAllBooks = catchAsync(async(req , res ,next) => {
     Books : books
   });   
 });
+
 exports.getCertainBook = catchAsync(async(req , res ,next) => {
-  const book = await bookModel.findById(req.params.id).populate('file_id');
+  const book = await BookModel.findById(req.params.id);
   if (!book) {
     return res.status(404).json({
       message : 'No book found'
@@ -24,24 +61,11 @@ exports.getCertainBook = catchAsync(async(req , res ,next) => {
   res.status(200).json({
     book
   }); 
+});
 
-});
-exports.createBook = catchAsync(async(req , res ,next) => {
-  const book = await bookModel.create({
-    title :req.body.title ,
-    author :req.body.author ,
-    pages:req.body.pages,
-    size :req.body.size,
-    chapters:req.body.chapters,
-    file_id:req.body.file_id
-  });
-  res.status(201).json({
-    message :'Created book successfully' ,
-    book
-  });
-});
 exports.updateBook = catchAsync(async(req , res ,next) => {
-  const book = await bookModel.findByIdAndUpdate(req.params.id ,req.body ,{
+  //Note if the title book updated the slug would not be updated 
+  const book = await BookModel.findByIdAndUpdate(req.params.id ,req.body ,{
     new :true, 
     runValidators :true
   });
@@ -54,15 +78,27 @@ exports.updateBook = catchAsync(async(req , res ,next) => {
     book
   });
 });
-exports.deleteBook = catchAsync(async(req , res ,next) => {
-  const book = await bookModel.findByIdAndDelete(req.params.id);
+
+exports.displayBook = catchAsync (async (req ,res ,next) => {
+  const book = await BookModel.findById(req.params.id);
   if (!book) {
     return res.status(404).json({
       message : 'No book found'
     });
   }
-  res.status(204).json({
-    message :'Book is deleted successfully'
-  });
+  req.fileId = book.file_id;
+  filesController.displayFile(req, res, next);
 });
 
+exports.getBooksTitles = catchAsync (async (req ,res ,next) => { 
+  const books = await BookModel.find().select('title');
+  if (books.length === 0) { 
+    return res.status(404).json({
+      message : 'No books found'
+    });
+  }
+  res.status(200).json({
+    length :books.length ,
+    Books : books
+  }); 
+});

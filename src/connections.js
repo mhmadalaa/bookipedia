@@ -11,11 +11,9 @@ const makeNewConnection = (uri, databaseName) => {
   db.on('disconnected', () => { console.log(`Disconnected to ${databaseName} `); });
 
   return db;
-
 };
 
-const BookepidiaConnection = makeNewConnection(process.env.DATABASE , 'Bookepidia Database');
+const bookipediaConnection = makeNewConnection(process.env.DATABASE ,'Data base');
 
+module.exports = {bookipediaConnection};
 
-/* const GridfsConnection = makeNewConnection(process.env.FILES_DATABASE , 'Gridfs Database');
- */module.exports = {BookepidiaConnection};

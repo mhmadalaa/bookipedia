@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
+const {bookipediaConnection} = require('./../connections');
 const slugify = require('slugify');
-const {BookepidiaConnection} = require('./../connections'); 
 
 
-const bookSchema = new mongoose.Schema({
+const BookSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'You must provide a title']
@@ -19,28 +19,27 @@ const bookSchema = new mongoose.Schema({
   },
   size :{
     type: Number,
-    require:[true, 'You must provide the size'] ,
+    required:[true, 'You must provide the size'] ,
     min :[1 , 'The minimum size is 1 Kb']
 
   },
   chapters :{
     type: Number,
-    require:[true, 'You must provide the number of chapters'] ,
+    required:[true, 'You must provide the number of chapters'] ,
   },
   slug: String ,
   file_id : {
-    type : mongoose.Schema.ObjectId  ,
-    ref :'Fs.file'
+    type :String
   }
 });
 
-bookSchema.pre('save' ,function(next) {
+BookSchema.pre('save' ,function(next) {
   this.slug = slugify(this.title , {lower :true});
   next();
 });
 
-const BookModel = BookepidiaConnection.model('Book', bookSchema);
-/* console.log(mongoose.models); */
+
+const BookModel = bookipediaConnection.model('Book', BookSchema);
 
 
 module.exports = BookModel;
