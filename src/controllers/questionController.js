@@ -28,33 +28,13 @@ exports.askQuestion = catchAsync(async (req, res) => {
   await pipeline(chatCompletion.choices[0].message.content, res);
 });
 
-exports.reteriveBookChat = catchAsync(async (req, res) => {
+exports.reteriveChat = catchAsync(async (req, res) => {
   // FIXME: we will now the requsested user from the pre authenticate middleware
   //        so we will assume it right now
-  const user = '65b94e71032474cb3d01f55f';
+  const user = '65bac7fc9e0596718c2769ce';
 
   const questions = await Question.find({
-    book: req.params.book_id,
-    user: user,
-    createdAt: { $lte: req.query.createdOnBefore || Date.now() },
-  })
-    .limit(req.query.limit || 10)
-    .select('-__v')
-    .sort('-createdOn');
-
-  res.status(200).json({
-    message: 'success',
-    data: questions,
-  });
-});
-
-exports.reteriveDocumentChat = catchAsync(async (req, res) => {
-  // FIXME: we will now the requsested user from the pre authenticate middleware
-  //        so we will assume it right now
-  const user = '65bbfbe7e2e2d8a99ae79cd6';
-
-  const questions = await Question.find({
-    document: req.params.document_id,
+    $or: [{ book: req.params.id }, { document: req.params.id }],
     user: user,
     createdAt: { $lte: req.query.createdOnBefore || Date.now() },
   })

@@ -6,8 +6,8 @@ const chapterSummaryController = require('../controllers/chSummaryController');
 const router = express();
 
 router.route('/question').get(questionController.askQuestion);
-router.route('/chat/book/:book_id').get(questionController.reteriveBookChat);
-router.route('/chat/document/:document_id').get(questionController.reteriveDocumentChat);
+router.route('/chat/:id').get(questionController.reteriveChat);
+// router.route('/chat/document/:document_id').get(questionController.reteriveDocumentChat);
 router.route('/tts').get(textToSpeechController.textToSpeech);
 
 /*
