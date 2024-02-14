@@ -12,13 +12,29 @@ const url = process.env.DATABASE;
 const client = new MongoClient(url);
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(new Error('Please upload only images or PDF files'), false);
+  }
+};
+const upload = multer({ 
+  storage ,
+  fileFilter :multerFilter });
 
-exports.uploadSingleFile = upload.single('file');
+exports.uploadFilesByMulter = upload.fields([
+  { name: 'coverImage', maxCount: 1 },
+  { name: 'file', maxCount: 1 }
+]);  
+
 
 exports.uploadFile = async (req, res, next) => {
-  const fileBuffer = req.file.buffer; // Access the file buffer
-  const filename = req.file.originalname;
+  if (!req.files || !req.files.file || req.files.file.length === 0) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+  const fileBuffer = req.files.file[0].buffer; // Access the file buffer
+  const filename = `${Date.now()}${req.files.file[0].originalname}`;
   const uploadStream = bucket.openUploadStream(filename);
   const id = uploadStream.id;
   req.fileId = id;
@@ -50,35 +66,6 @@ exports.displayFile = catchAsync(async (req, res, next) => {
 
   // Pipe the file stream to the response
   downloadStream.pipe(res);
-});
-
-exports.getFiles = catchAsync(async (req, res, next) => {
-  const files = await client.db().collection('fs.files');
-  const metadata = await files.find().toArray();
-  if (metadata.length === 0) {
-    return res.status(404).json({
-      message: 'No files found',
-    });
-  }
-  res.status(200).json({
-    length: metadata.length,
-    metadata,
-  });
-});
-
-
-exports.getCertainFile = catchAsync(async (req, res, next) => {
-  const files = await client.db().collection('fs.files');
-  const fileId = new ObjectId(req.params.id);
-  const file = await files.findOne({ _id: fileId });
-  if (!file) {
-    return res.status(404).json({
-      message: 'File not found',
-    });
-  }
-  res.status(200).json({
-    file,
-  });
 });
 
 exports.deleteFile = catchAsync(async (req, res, next) => {

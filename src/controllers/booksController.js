@@ -5,13 +5,19 @@ const BookModel = require('./../models/BookModel');
 
 exports.createBook = async(req , res ,next) => {
   try {
+    if (!req.files || !req.files.coverImage || req.files.coverImage.length === 0) {
+      return res.status(400).json({ error: 'No image uploaded' });
+    }
     const book = await BookModel.create({
       title :req.body.title ,
       author :req.body.author ,
       pages:req.body.pages,
       size :req.body.size,
       chapters:req.body.chapters,
-      file_id:req.fileId
+      category : req.body.category ,
+      coverImage:`${Date.now()}${req.files.coverImage[0].originalname}`,
+      file_id:req.fileId ,
+      description:req.body.description
     });
     res.status(201).json({
       message :'Created book successfully' ,
@@ -101,4 +107,18 @@ exports.getBooksTitles = catchAsync (async (req ,res ,next) => {
     length :books.length ,
     Books : books
   }); 
+});
+
+exports.getCoverImages = catchAsync(async (req ,res ,next) => {
+  const coverImages = await BookModel.find().select('coverImage');
+  if (coverImages.length === 0) { 
+    return res.status(404).json({
+      message : 'No cover images found'
+    });
+  }
+  res.status(200).json({
+    length :coverImages.length ,
+    CoverImages : coverImages
+  });
+
 });
