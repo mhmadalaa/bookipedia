@@ -31,6 +31,9 @@ const BookSchema = new mongoose.Schema({
     type:String ,
     required :[true , 'You should provide the cover image']
   },
+  imageBuffer :{
+    type:Buffer
+  },
   category :{
     type :String , 
     required :[true , 'You should provide the category']

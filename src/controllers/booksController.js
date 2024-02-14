@@ -16,6 +16,7 @@ exports.createBook = async(req , res ,next) => {
       chapters:req.body.chapters,
       category : req.body.category ,
       coverImage:`${Date.now()}${req.files.coverImage[0].originalname}`,
+      imageBuffer :req.files.coverImage[0].buffer,
       file_id:req.fileId ,
       description:req.body.description
     });
@@ -110,7 +111,7 @@ exports.getBooksTitles = catchAsync (async (req ,res ,next) => {
 });
 
 exports.getCoverImages = catchAsync(async (req ,res ,next) => {
-  const coverImages = await BookModel.find().select('coverImage');
+  const coverImages = await BookModel.find().select({coverImage :1 ,imageBuffer:1});
   if (coverImages.length === 0) { 
     return res.status(404).json({
       message : 'No cover images found'
@@ -122,3 +123,12 @@ exports.getCoverImages = catchAsync(async (req ,res ,next) => {
   });
 
 });
+
+/* exports.getOneImage = catchAsync(async(req ,res ,next) => {
+  const book = await BookModel.findById(req.params.id);
+  res.setHeader('Content-Type', 'image/jpeg'); // Adjust the content type based on your file type
+  res.setHeader('Content-Disposition', 'inline; filename="image.jpg"'); // Adjust the filename and disposition as needed
+
+  res.status(200).send(book.imageBuffer);
+
+}); */

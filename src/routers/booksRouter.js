@@ -6,7 +6,8 @@ const fileController = require('./../controllers/filesController');
 const router = express.Router();
 
 router.get('/DisplayBook/:id' ,booksController.displayBook);
-router.get('/titles' ,booksController.getBooksTitles);
+/* router.get('/DisplayImage/:id' ,booksController.getOneImage);
+ */router.get('/titles' ,booksController.getBooksTitles);
 router.get('/getCoverImages' ,booksController.getCoverImages);
 
 
