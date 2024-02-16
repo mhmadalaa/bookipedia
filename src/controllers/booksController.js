@@ -5,9 +5,6 @@ const BookModel = require('./../models/BookModel');
 
 exports.createBook = async(req , res ,next) => {
   try {
-    if (!req.files || !req.files.coverImage || req.files.coverImage.length === 0) {
-      return res.status(400).json({ error: 'No image uploaded' });
-    }
     const book = await BookModel.create({
       title :req.body.title ,
       author :req.body.author ,
@@ -15,9 +12,8 @@ exports.createBook = async(req , res ,next) => {
       size :req.body.size,
       chapters:req.body.chapters,
       category : req.body.category ,
-      coverImage:`${Date.now()}${req.files.coverImage[0].originalname}`,
-      imageBuffer :req.files.coverImage[0].buffer,
       file_id:req.fileId ,
+      coverImage_id : req.coverImage_id,
       description:req.body.description
     });
     res.status(201).json({
@@ -71,16 +67,16 @@ exports.getCertainBook = catchAsync(async(req , res ,next) => {
 });
 
 exports.updateBook = catchAsync(async(req , res ,next) => {
-  //Note if the title book updated the slug would not be updated 
-  const book = await BookModel.findByIdAndUpdate(req.params.id ,req.body ,{
-    new :true, 
-    runValidators :true
-  });
+  const book = await BookModel.findById(req.params.id);
   if (!book) {
     return res.status(404).json({
       message : 'No book found'
     });
   }
+  Object.keys(req.body).forEach((e) => {
+    book[e] = req.body[e];
+  });
+  await book.save({validateBeforeSave :true});
   res.status(200).json({
     book
   });
@@ -110,25 +106,3 @@ exports.getBooksTitles = catchAsync (async (req ,res ,next) => {
   }); 
 });
 
-exports.getCoverImages = catchAsync(async (req ,res ,next) => {
-  const coverImages = await BookModel.find().select({coverImage :1 ,imageBuffer:1});
-  if (coverImages.length === 0) { 
-    return res.status(404).json({
-      message : 'No cover images found'
-    });
-  }
-  res.status(200).json({
-    length :coverImages.length ,
-    CoverImages : coverImages
-  });
-
-});
-
-/* exports.getOneImage = catchAsync(async(req ,res ,next) => {
-  const book = await BookModel.findById(req.params.id);
-  res.setHeader('Content-Type', 'image/jpeg'); // Adjust the content type based on your file type
-  res.setHeader('Content-Disposition', 'inline; filename="image.jpg"'); // Adjust the filename and disposition as needed
-
-  res.status(200).send(book.imageBuffer);
-
-}); */

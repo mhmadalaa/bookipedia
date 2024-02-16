@@ -27,13 +27,6 @@ const BookSchema = new mongoose.Schema({
     required:[true, 'You must provide the number of chapters'] ,
   },
   slug: String ,
-  coverImage:{
-    type:String ,
-    required :[true , 'You should provide the cover image']
-  },
-  imageBuffer :{
-    type:Buffer
-  },
   category :{
     type :String , 
     required :[true , 'You should provide the category']
@@ -44,13 +37,23 @@ const BookSchema = new mongoose.Schema({
   },
   file_id : {
     type :String
+  },
+  coverImage_id :{
+    type :mongoose.Schema.ObjectId ,
+    ref :'Cover-Image'
   }
 });
 
 BookSchema.pre('save' ,function(next) {
-  this.slug = slugify(this.title , {lower :true});
-  this.category = this.category.toLowerCase();
-  next();
+  try {
+    this.slug = this.isModified('title') ? slugify(this.title , {lower :true}) : this.slug;
+    this.category = this.isModified('category') ? this.category.toLowerCase() : this.category;
+    next();
+  }
+  catch (err) {
+    next(err);
+  }
+ 
 });
 
 

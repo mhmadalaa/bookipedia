@@ -17,7 +17,7 @@ app.use(
 );
 
 // APP ROUTERS`
-app.use('/books' , booksRouter);
+app.use('/book' , booksRouter);
 app.use('/auth', auth);
 
 // NOT FOUND ROUTERS ERROR HANDLER
