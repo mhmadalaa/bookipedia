@@ -21,11 +21,15 @@
   },
   "homepage": "https://github.com/lilhind/bookipedia#readme",
   "dependencies": {
+    "bcrypto": "^5.5.2",
+    "crypto": "^1.0.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "dotenv": "^16.4.1",
