@@ -1,6 +1,6 @@
-const userModel = require('./../models/users');
-const sendEmail = require('./../utils/email');
-const hashToken = require('./../utils/hashToken');
+const userModel = require('../models/userModel');
+const sendEmail = require('../utils/email');
+const hashToken = require('../utils/hashToken');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
@@ -25,7 +25,12 @@ const createSendToken = (res, status, user) => {
   });
 };
 
+exports.signupGET = async (req, res) => {
+  console.log("signup get");
+}
+
 exports.signup = async (req, res) => {
+  console.log("signup");
   try {
     // create a user but marked as not authenticated
     const newUser = await userModel.create({
