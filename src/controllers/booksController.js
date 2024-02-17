@@ -1,7 +1,7 @@
 const filesController = require('./filesController');
 const catchAsync = require('./../utils/catchAsync');
 const BookModel = require('./../models/BookModel');
-
+const CoverImageModel = require('./../models/ImageModel');
 
 exports.createBook = async(req , res ,next) => {
   try {
@@ -106,3 +106,10 @@ exports.getBooksTitles = catchAsync (async (req ,res ,next) => {
   }); 
 });
 
+exports.getCoverImages = catchAsync(async (req , res , next) => {
+  const coverImages = await CoverImageModel.find();
+  res.status(200).json({
+    length : coverImages.length ,
+    Covers : coverImages 
+  });
+});
