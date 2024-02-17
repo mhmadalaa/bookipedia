@@ -26,7 +26,7 @@ const client = new MongoClient(uri);
 
 async function run() {
   try {
-    const database = client.db('<db>');
+    const database = client.db('url');
     const users = database.collection('users');
 
     // Query for a movie that has the title 'Back to the Future'
