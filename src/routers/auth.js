@@ -1,42 +1,25 @@
 const express = require('express');
-require('dotenv').config(); // TODO: remove this line
+const authController = require('./../controllers/authControllers');
 
-
-
-/*
 const router = express();
 
-router.get('/', (req, res) => {
-    res.send('authentication route');
-  });
+router.route('/signup').post(authController.signup);
+router.route('/confirm-signup/:confirmToken').post(authController.confirmSignup);
 
+router.post('/forgot-password', authController.forgetPassword);
+router.patch('/reset-password/:resetToken', authController.resetPassword);
+
+router.post('/change-email', authController.isLogin, authController.changeEmail);
+router.patch('/reset-email/:resetToken', authController.isLogin, authController.resetEmail);
+
+// update the password for the logged in user, with submitting the current password
+router.patch('/update-password', authController.isLogin, authController.updatePassword);
+
+router.route('/login').post(authController.login);
+
+router.route('/logout').post(authController.isLogin, authController.logout);
+
+// update the non-crucial data of the user
+router.route('/update-user').patch(authController.isLogin, authController.updateUser);
 
 module.exports = router;
-*/
-
-
-// Replace the uri string with your connection string.
-
-const { MongoClient } = require("mongodb");
-
-// Replace the uri string with your connection string.
-const uri = process.env.DATABASE;
-
-const client = new MongoClient(uri);
-
-async function run() {
-  try {
-    const database = client.db('url');
-    const users = database.collection('users');
-
-    // Query for a movie that has the title 'Back to the Future'
-    const query = { username: 'lilhind' };
-    const user = await users.findOne(query);
-
-    console.log(user);
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
