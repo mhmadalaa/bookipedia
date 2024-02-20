@@ -17,11 +17,6 @@ const BookSchema = new mongoose.Schema({
     required: [true, 'You must provide the number of the book pages'],
     min: [1, 'The minimum number of pages is 1']
   },
-  size :{
-    type: Number,
-    required:[true, 'You must provide the size'] ,
-    min :[1 , 'The minimum size is 1 Kb']
-  },
   chapters :{
     type: Number,
     required:[true, 'You must provide the number of chapters'] ,
@@ -53,10 +48,24 @@ BookSchema.pre('save' ,function(next) {
   catch (err) {
     next(err);
   }
- 
 });
 
+BookSchema.pre('updateOne',function(next) {
+  try {
+    if (this._update.title) {
+      this._update.slug = slugify(this._update.title , {lower :true});
+    }
+    if (this._update.category) {
+      this._update.category = this._update.category.toLowerCase();
+    }
+    next();
+  }
+  catch (err) {
+    next(err);
+  }
+});
 
+ 
 const BookModel = bookipediaConnection.model('Book', BookSchema);
 
 

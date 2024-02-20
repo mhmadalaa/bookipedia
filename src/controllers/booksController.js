@@ -67,16 +67,15 @@ exports.getCertainBook = catchAsync(async(req , res ,next) => {
 });
 
 exports.updateBook = catchAsync(async(req , res ,next) => {
+  await BookModel.updateOne({_id : req.params.id} ,req.body ,{
+    runValidators :true,
+  });
   const book = await BookModel.findById(req.params.id);
   if (!book) {
     return res.status(404).json({
       message : 'No book found'
     });
   }
-  Object.keys(req.body).forEach((e) => {
-    book[e] = req.body[e];
-  });
-  await book.save({validateBeforeSave :true});
   res.status(200).json({
     book
   });
