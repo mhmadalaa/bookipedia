@@ -5,6 +5,7 @@ const morgan = require('morgan');
 
 const auth = require('./routers/auth');
 const booksRouter = require('./routers/booksRouter');
+const aiRouter = require('./routers/aiRoute');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(
 // APP ROUTERS
 app.use('/', booksRouter);
 app.use('/auth', auth);
+app.use('/ai/', aiRouter);
 
 // NOT FOUND ROUTERS ERROR HANDLER
 app.use((err, req, res, next) => {
