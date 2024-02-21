@@ -1,14 +1,25 @@
-const express = require('express');
+const express  = require('express');
 const booksController = require('./../controllers/booksController');
+const fileController = require('./../controllers/filesController');
+
 
 const router = express.Router();
 
+router.get('/displayed-book/:id' ,booksController.displayBook);
+router.get('/titles' ,booksController.getBooksTitles);
+router.get('/cover-images' ,booksController.getCoverImages);
 
-router.post('/upload', booksController.uploadSingleFile, booksController.uploadBook);
-router.get('/uploadedbooks/:id', booksController.displayBook);
-router.get('/books', booksController.getBooks);
-router.get('/booksTitles', booksController.getBooksTitles);
-router.route('/books/:id').get(booksController.getCertainBook).delete(booksController.deleteBook);
+
+router.route('/')
+  .get(booksController.getAllBooks)
+  .post(fileController.uploadFilesByMulter,
+    fileController.uploadImage,
+    fileController.uploadFile,
+    booksController.createBook);
+router.route('/:id')
+  .get(booksController.getCertainBook)
+  .patch(booksController.updateBook)
+  .delete(booksController.deleteBook);
 
 
 module.exports = router;
