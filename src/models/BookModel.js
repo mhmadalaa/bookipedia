@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {bookipediaConnection} = require('./../connections');
+// const {bookipediaConnection} = require('./../db/connections');
 const slugify = require('slugify');
 
 
@@ -66,7 +66,8 @@ BookSchema.pre('updateOne',function(next) {
 });
 
  
-const BookModel = bookipediaConnection.model('Book', BookSchema);
+// const BookModel = bookipediaConnection.model('Book', BookSchema);
+const BookModel = mongoose.model('Book', BookSchema);
 
 
 module.exports = BookModel;

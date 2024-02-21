@@ -1,12 +1,16 @@
 const multer = require('multer');
 const { GridFSBucket, MongoClient } = require('mongodb');
-const {bookipediaConnection} = require('./../connections');
+// const {bookipediaConnection} = require('./../db/connections');
 const catchAsync = require('../utils/catchAsync');
 const { ObjectId } = require('bson');
 const CoverImageModel = require('./../models/ImageModel');
+const mongoose = require('mongoose');
+
+const db = mongoose.connection;
+const bucket = new GridFSBucket(db);
 
 
-const bucket = new GridFSBucket(bookipediaConnection);
+// const bucket = new GridFSBucket(bookipediaConnection);
 
 const url = process.env.DATABASE;
 const client = new MongoClient(url);

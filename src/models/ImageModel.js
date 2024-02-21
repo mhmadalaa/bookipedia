@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {bookipediaConnection} = require('./../connections');
+// const {bookipediaConnection} = require('./../db/connections');
 
 const CoverImageSchema = new mongoose.Schema({
   imageName :{
@@ -10,6 +10,7 @@ const CoverImageSchema = new mongoose.Schema({
   }
 });
 
-const CoverImageModel = bookipediaConnection.model('Cover-Image',CoverImageSchema);
+// const CoverImageModel = bookipediaConnection.model('Cover-Image',CoverImageSchema);
+const CoverImageModel = mongoose.model('Cover-Image',CoverImageSchema);
 
 module.exports = CoverImageModel;
