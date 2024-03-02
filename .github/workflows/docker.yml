@@ -1,0 +1,25 @@
+name: Docker
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-application
+
+    - name: Run the Docker container
+      run: docker run --name test-container -d -p 3000:3000 my-application
+
+    - name: Check the Docker container
+      run: |
+        sleep 10
+        docker ps | grep test-container
