@@ -22,4 +22,4 @@ jobs:
     - name: Check the Docker container
       run: |
         sleep 30
-        docker ps | grep test-container
+        docker ps | grep my-application
