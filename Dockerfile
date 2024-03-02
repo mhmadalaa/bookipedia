@@ -10,6 +10,8 @@ COPY package*.json ./
 # Install the application's dependencies inside the Docker image
 RUN npm install
 
+RUN npm install slugify
+
 # Copy the rest of the application's code into the image
 COPY . .
 
