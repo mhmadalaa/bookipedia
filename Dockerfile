@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install the application's dependencies inside the Docker image
+RUN npm install -g npm@latest
 RUN npm install
 
 RUN npm install slugify
