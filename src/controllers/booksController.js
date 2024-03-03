@@ -52,6 +52,9 @@ exports.createBook = async (req, res, next) => {
 
 exports.deleteBook = catchAsync(async (req, res, next) => {
   const book = await BookModel.findByIdAndDelete(req.params.id);
+  // TODO: delete image from public folder
+  // const coverImage = await CoverImageModel.findByIdAndDelete(req.coverImage_id);
+
   if (!book) {
     return res.status(404).json({
       message: 'No book found',

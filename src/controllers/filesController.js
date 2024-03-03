@@ -1,7 +1,7 @@
 const { GridFSBucket, MongoClient } = require('mongodb');
 // const {bookipediaConnection} = require('./../db/connections');
 const catchAsync = require('../utils/catchAsync');
-const { ObjectId } = require('bson');
+// const { ObjectId } = require('bson');
 const CoverImageModel = require('./../models/ImageModel');
 const mongoose = require('mongoose');
 
@@ -53,7 +53,8 @@ exports.uploadImage = catchAsync(async (req, res, next) => {
 
 exports.displayFile = catchAsync(async (req, res, next) => {
   const files = await client.db().collection('fs.files');
-  const fileId = new ObjectId(req.fileId);
+  // const fileId = new ObjectId(req.fileId);
+  const fileId = req.fileId;
   const file = await files.findOne({ _id: fileId });
   if (!file) {
     return res.status(404).json({
@@ -73,10 +74,10 @@ exports.displayFile = catchAsync(async (req, res, next) => {
 exports.deleteFile = catchAsync(async (req, res, next) => {
   const files = await client.db().collection('fs.files');
   const chuncks = await client.db().collection('fs.chunks');
-  const fileId = new ObjectId(req.fileId);
+  // const fileId = new ObjectId(req.fileId);
+  const fileId = req.fileId;
   await files.deleteOne({ _id: fileId });
   await chuncks.deleteMany({ files_id: fileId });
-  deleteImage(req, res, next);
 });
 
 const deleteImage = catchAsync(async (req, res, next) => {
