@@ -12,4 +12,6 @@ router
     documentController.createDocument,
   );
 
+router.get('/document-file/:id', documentController.displayDocument);
+
 module.exports = router;

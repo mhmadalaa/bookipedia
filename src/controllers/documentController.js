@@ -1,5 +1,6 @@
 const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
+const filesController = require('./../controllers/filesController');
 
 const multer = require('multer');
 
@@ -30,4 +31,16 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     msg: 'sucess',
     document,
   });
+});
+
+exports.displayDocument = catchAsync(async (req, res, next) => {
+  const document = await DocumentModel.findById(req.params.id);
+  if (!document) {
+    return res.status(404).json({
+      message: 'No document found',
+    });
+  }
+
+  req.fileId = document.ocr_id;
+  filesController.displayFile(req, res, next);
 });
