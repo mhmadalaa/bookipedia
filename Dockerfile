@@ -12,6 +12,7 @@ RUN npm install -g npm@latest
 RUN npm install
 
 RUN npm install slugify
+RUN npm install dotenv
 
 # Copy the rest of the application's code into the image
 COPY . .
