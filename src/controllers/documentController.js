@@ -52,10 +52,27 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
       message: 'No document found',
     });
   }
-  
+
   req.fileId = document.original_id;
   filesController.deleteFile(req, res, next);
   res.status(204).json({
     message: 'document deleted successfully',
+  });
+});
+
+exports.getAllDocuments = catchAsync(async (req, res, next) => {
+  // FIXME: replace user with logged in user
+  const user = '65cfa8d7673213203967414c';
+
+  const documents = await DocumentModel.find({ user: user });
+  if (documents.length === 0) {
+    return res.status(404).json({
+      message: 'No documents found',
+    });
+  }
+
+  res.status(200).json({
+    length: documents.length,
+    documents: documents,
   });
 });

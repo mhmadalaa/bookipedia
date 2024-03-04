@@ -12,7 +12,8 @@ router
     documentController.configMulter,
     fileController.uploadFile,
     documentController.createDocument,
-  );
+  )
+  .get(documentController.getAllDocuments);
 
 router.route('/:id').delete(documentController.deleteDocument);
 
