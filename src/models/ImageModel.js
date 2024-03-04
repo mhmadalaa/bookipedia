@@ -14,3 +14,5 @@ const CoverImageSchema = new mongoose.Schema({
 const CoverImageModel = mongoose.model('Cover-Image',CoverImageSchema);
 
 module.exports = CoverImageModel;
+
+// TODO: replace photos to public folder

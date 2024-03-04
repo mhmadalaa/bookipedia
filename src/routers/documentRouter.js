@@ -4,6 +4,8 @@ const fileController = require('./../controllers/filesController');
 
 const router = express();
 
+router.get('/file/:id', documentController.displayDocument);
+
 router
   .route('/')
   .post(
@@ -12,6 +14,6 @@ router
     documentController.createDocument,
   );
 
-router.get('/document-file/:id', documentController.displayDocument);
+router.route('/:id').delete(documentController.deleteDocument);
 
 module.exports = router;

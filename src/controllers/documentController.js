@@ -44,3 +44,18 @@ exports.displayDocument = catchAsync(async (req, res, next) => {
   req.fileId = document.ocr_id;
   filesController.displayFile(req, res, next);
 });
+
+exports.deleteDocument = catchAsync(async (req, res, next) => {
+  const document = await DocumentModel.findByIdAndDelete(req.params.id);
+  if (!document) {
+    return res.status(404).json({
+      message: 'No document found',
+    });
+  }
+  
+  req.fileId = document.original_id;
+  filesController.deleteFile(req, res, next);
+  res.status(204).json({
+    message: 'document deleted successfully',
+  });
+});
