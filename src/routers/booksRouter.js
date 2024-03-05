@@ -1,6 +1,6 @@
 const express = require('express');
 const booksController = require('./../controllers/booksController');
-const fileController = require('./../controllers/filesController');
+const pdfService = require('./../services/pdfService');
 
 const router = express.Router();
 
@@ -13,8 +13,8 @@ router
   .get(booksController.getAllBooks)
   .post(
     booksController.configMulter,
-    fileController.uploadImage,
-    fileController.uploadFile,
+    pdfService.uploadImage,
+    pdfService.uploadFile,
     booksController.createBook,
   );
 router

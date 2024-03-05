@@ -1,4 +1,4 @@
-const filesController = require('./filesController');
+const pdfService = require('./../services/pdfService');
 const catchAsync = require('./../utils/catchAsync');
 const BookModel = require('./../models/BookModel');
 const CoverImageModel = require('./../models/ImageModel');
@@ -45,7 +45,7 @@ exports.createBook = async (req, res, next) => {
       book,
     });
   } catch (err) {
-    filesController.deleteFile(req, res, next);
+    pdfService.deleteFile(req, res, next);
     next(err);
   }
 };
@@ -61,7 +61,7 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
     });
   }
   req.fileId = book.file_id;
-  filesController.deleteFile(req, res, next);
+  pdfService.deleteFile(req, res, next);
   res.status(204).json({
     message: 'Book is deleted successfully',
   });
@@ -115,7 +115,7 @@ exports.displayBook = catchAsync(async (req, res, next) => {
     });
   }
   req.fileId = book.file_id;
-  filesController.displayFile(req, res, next);
+  pdfService.displayFile(req, res, next);
 });
 
 exports.getBooksTitles = catchAsync(async (req, res, next) => {

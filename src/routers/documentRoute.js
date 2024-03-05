@@ -1,6 +1,6 @@
 const express = require('express');
 const documentController = require('../controllers/documentController');
-const fileController = require('../controllers/filesController');
+const pdfService = require('../services/pdfService');
 
 const router = express();
 
@@ -10,7 +10,7 @@ router
   .route('/')
   .post(
     documentController.configMulter,
-    fileController.uploadFile,
+    pdfService.uploadFile,
     documentController.createDocument,
   )
   .get(documentController.getAllDocuments);

@@ -1,6 +1,6 @@
 const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
-const filesController = require('./../controllers/filesController');
+const pdfService = require('./../services/pdfService');
 
 const multer = require('multer');
 
@@ -44,7 +44,7 @@ exports.displayDocument = catchAsync(async (req, res, next) => {
   }
 
   req.fileId = document.ocr_id;
-  filesController.displayFile(req, res, next);
+  pdfService.displayFile(req, res, next);
 });
 
 exports.deleteDocument = catchAsync(async (req, res, next) => {
@@ -56,7 +56,7 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
   }
 
   req.fileId = document.original_id;
-  filesController.deleteFile(req, res, next);
+  pdfService.deleteFile(req, res, next);
   res.status(204).json({
     message: 'document deleted successfully',
   });
