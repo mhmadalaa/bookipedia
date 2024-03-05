@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const auth = require('./routers/auth');
 const booksRouter = require('./routers/booksRouter');
 const aiRouter = require('./routers/aiRoute');
-const documentRouter = require('./routers/documentRouter');
+const documentRouter = require('./routers/documentRoute');
 
 const app = express();
 
