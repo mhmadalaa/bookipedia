@@ -63,9 +63,6 @@ exports.signup = catchAsync(async (req, res ,next) => {
 
   const confirmToken = newUser.createToken();
   newUser.save({ validateBeforeSave: false });
-  res.status(200).json({
-    newUser
-  });
 
   try {
     await sendEmail({
@@ -77,7 +74,7 @@ exports.signup = catchAsync(async (req, res ,next) => {
     res.status(200).json({
       status: 'success',
       message: 'An email will be send to complete the steps',
-      confirmToken,
+      newUser
     });
   } catch (err) {
     await userModel.findByIdAndDelete(newUser._id);
