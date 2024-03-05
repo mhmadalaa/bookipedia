@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const documentSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
   original_id: {
     type: mongoose.Schema.ObjectId,
   },

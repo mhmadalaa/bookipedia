@@ -19,7 +19,8 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   const fileBuffer = req.files.file[0].buffer; // Access the file buffer
-  const filename = `${Date.now()}${req.files.file[0].originalname}`;
+  // const filename = `${Date.now()}${req.files.file[0].originalname}`;
+  const filename = req.files.file[0].originalname;
   const uploadStream = bucket.openUploadStream(filename);
   const id = uploadStream.id;
   req.fileId = id;
