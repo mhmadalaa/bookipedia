@@ -21,8 +21,7 @@ const createSendToken = (res, status, user) => {
 
   res.status(status).json({
     status: 'success',
-    user,
-    token,
+    user
   });
 };
 
@@ -36,8 +35,7 @@ const sendEmailWithToken = async (user ,token ,res) => {
   
     res.status(200).json({
       status: 'success',
-      message: 'An email will be send to complete the steps',
-      token,
+      message: 'An email will be send to complete the steps'
     });
   } catch (err) {
     user.tokenExpires = undefined;
