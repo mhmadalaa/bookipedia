@@ -33,11 +33,9 @@ exports.configMulter = upload.fields([
 exports.handleCoverImage = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
 
-  // when using multer memorysotrage it doens't add filename
-  // so we should add it manually to fit with the other functions
   const fileBuffer = req.files.coverImage[0].buffer; // Access the file buffer
-  // const filename = `${req.files.coverImage[0].file}.jpeg`;
-  const filename = 'coverx.jpeg';
+  // console.log(req.files.coverImage[0]);
+  const filename = `${req.book._id}.jpeg`;
 
   await sharp(fileBuffer)
     .resize(500, 500)
@@ -45,7 +43,10 @@ exports.handleCoverImage = catchAsync(async (req, res, next) => {
     .jpeg({ quality: 90 })
     .toFile(`./src/public/img/covers/${filename}`);
 
-  next();
+  res.status(201).json({
+    message: 'Created book successfully',
+    book: req.book,
+  });
 });
 
 exports.createBook = async (req, res, next) => {
@@ -61,10 +62,9 @@ exports.createBook = async (req, res, next) => {
       // coverImage_id: req.coverImage_id,
       description: req.body.description,
     });
-    res.status(201).json({
-      message: 'Created book successfully',
-      book,
-    });
+    req.book = book;
+
+    next();
   } catch (err) {
     pdfService.deleteFile(req, res, next);
     next(err);
