@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const path = require('path');
 
 const auth = require('./routers/auth');
-const booksRouter = require('./routers/booksRouter');
+const bookRouter = require('./routers/bookRoute');
 const aiRouter = require('./routers/aiRoute');
 const documentRouter = require('./routers/documentRoute');
 
@@ -23,7 +23,7 @@ app.use(
 
 // APP ROUTERS
 app.use('/document', documentRouter);
-app.use('/book', booksRouter);
+app.use('/book', bookRouter);
 app.use('/auth', auth);
 app.use('/ai', aiRouter);
 

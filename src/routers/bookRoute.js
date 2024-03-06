@@ -1,6 +1,6 @@
 const express = require('express');
-const booksController = require('./../controllers/booksController');
-const pdfService = require('./../services/pdfService');
+const booksController = require('../controllers/booksController');
+const pdfService = require('../services/pdfService');
 
 const router = express.Router();
 
