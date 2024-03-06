@@ -6,17 +6,16 @@ const router = express.Router();
 
 router.get('/displayed-book/:id', booksController.displayBook);
 router.get('/titles', booksController.getBooksTitles);
+
 router.get('/cover-images', booksController.getCoverImages);
 
-router
-  .route('/')
-  .get(booksController.getAllBooks)
-  .post(
-    booksController.configMulter,
-    pdfService.uploadImage,
-    pdfService.uploadFile,
-    booksController.createBook,
-  );
+router.route('/').get(booksController.getAllBooks).post(
+  booksController.configMulter,
+  pdfService.uploadFile,
+  // pdfService.uploadImage,
+  booksController.createBook,
+);
+
 router
   .route('/:id')
   .get(booksController.getCertainBook)

@@ -1,7 +1,9 @@
 const pdfService = require('./../services/pdfService');
 const catchAsync = require('./../utils/catchAsync');
 const BookModel = require('./../models/BookModel');
-const CoverImageModel = require('./../models/ImageModel');
+// const CoverImageModel = require('./../models/ImageModel');
+
+// TODO: handle upload images to public folder
 
 const multer = require('multer');
 
@@ -37,7 +39,7 @@ exports.createBook = async (req, res, next) => {
       chapters: req.body.chapters,
       category: req.body.category,
       file_id: req.fileId,
-      coverImage_id: req.coverImage_id,
+      // coverImage_id: req.coverImage_id,
       description: req.body.description,
     });
     res.status(201).json({
@@ -131,10 +133,10 @@ exports.getBooksTitles = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getCoverImages = catchAsync(async (req, res, next) => {
-  const coverImages = await CoverImageModel.find();
-  res.status(200).json({
-    length: coverImages.length,
-    Covers: coverImages,
-  });
-});
+// exports.getCoverImages = catchAsync(async (req, res, next) => {
+//   const coverImages = await CoverImageModel.find();
+//   res.status(200).json({
+//     length: coverImages.length,
+//     Covers: coverImages,
+//   });
+// });

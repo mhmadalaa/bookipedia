@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { GridFSBucket, MongoClient } = require('mongodb');
 // const {bookipediaConnection} = require('./../db/connections');
 const catchAsync = require('../utils/catchAsync');
-const CoverImageModel = require('./../models/ImageModel');
+// const CoverImageModel = require('./../models/ImageModel');
 
 const db = mongoose.connection;
 const bucket = new GridFSBucket(db);
@@ -13,7 +13,7 @@ const client = new MongoClient(url);
 
 exports.uploadFile = catchAsync(async (req, res, next) => {
   if (!req.files || !req.files.file || req.files.file.length === 0) {
-    deleteImage(req, res, next);
+    // deleteImage(req, res, next);
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
@@ -29,25 +29,9 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
   });
 
   uploadStream.on('error', async (error) => {
-    deleteImage(req, res, next);
+    // deleteImage(req, res, next);
     res.status(500).json({ error: 'Error uploading file to GridFS' });
   });
-});
-
-exports.uploadImage = catchAsync(async (req, res, next) => {
-  if (
-    !req.files ||
-    !req.files.coverImage ||
-    req.files.coverImage.length === 0
-  ) {
-    return res.status(400).json({ error: 'No image uploaded' });
-  }
-  const cover = await CoverImageModel.create({
-    imageName: `${Date.now()}${req.files.coverImage[0].originalname}`,
-    imageBuffer: req.files.coverImage[0].buffer,
-  });
-  req.coverImage_id = cover._id;
-  next();
 });
 
 exports.displayFile = catchAsync(async (req, res, next) => {
@@ -80,6 +64,22 @@ exports.deleteFile = catchAsync(async (req, res, next) => {
   await chuncks.deleteMany({ files_id: fileId });
 });
 
-const deleteImage = catchAsync(async (req, res, next) => {
-  await CoverImageModel.findByIdAndDelete(req.coverImage_id);
-});
+// exports.uploadImage = catchAsync(async (req, res, next) => {
+//   if (
+//     !req.files ||
+//     !req.files.coverImage ||
+//     req.files.coverImage.length === 0
+//   ) {
+//     return res.status(400).json({ error: 'No image uploaded' });
+//   }
+//   // const cover = await CoverImageModel.create({
+//   //   imageName: `${Date.now()}${req.files.coverImage[0].originalname}`,
+//   //   imageBuffer: req.files.coverImage[0].buffer,
+//   // });
+//   // req.coverImage_id = cover._id;
+//   next();
+// });
+
+// const deleteImage = catchAsync(async (req, res, next) => {
+//   await CoverImageModel.findByIdAndDelete(req.coverImage_id);
+// });
