@@ -1,3 +1,4 @@
+const sharp = require('sharp');
 const pdfService = require('./../services/pdfService');
 const catchAsync = require('./../utils/catchAsync');
 const BookModel = require('./../models/BookModel');
@@ -28,6 +29,31 @@ exports.configMulter = upload.fields([
   { name: 'coverImage', maxCount: 1 },
   { name: 'file', maxCount: 1 },
 ]);
+
+exports.handleCoverImage = catchAsync(async (req, res, next) => {
+  if (!req.files) return next();
+
+  // when using multer memorysotrage it doens't add filename
+  // so we should add it manually to fit with the other functions
+  const fileBuffer = req.files.coverImage[0].buffer; // Access the file buffer
+  const filename = req.files.coverImage[0].originalname;
+
+  console.log(req.files.coverImage[0]);
+
+  // req.file.filename = `book-cover-${Date.now()}.jpeg`;
+
+  // when uploading files and will do operations to it
+  // using multer middleware, it's better to keep it in
+  // memory rather than to disk directly
+
+  await sharp(fileBuffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/book-cover/${filename}`);
+
+  next();
+});
 
 exports.createBook = async (req, res, next) => {
   try {

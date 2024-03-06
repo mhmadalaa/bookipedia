@@ -7,11 +7,12 @@ const router = express.Router();
 router.get('/displayed-book/:id', booksController.displayBook);
 router.get('/titles', booksController.getBooksTitles);
 
-router.get('/cover-images', booksController.getCoverImages);
+// router.get('/cover-images', booksController.getCoverImages);
 
 router.route('/').get(booksController.getAllBooks).post(
   booksController.configMulter,
   pdfService.uploadFile,
+  booksController.handleCoverImage,
   // pdfService.uploadImage,
   booksController.createBook,
 );
