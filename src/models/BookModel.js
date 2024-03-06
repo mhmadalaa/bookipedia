@@ -32,10 +32,6 @@ const BookSchema = new mongoose.Schema({
   },
   file_id : {
     type :String
-  },
-  coverImage_id :{
-    type :mongoose.Schema.ObjectId ,
-    ref :'Cover-Image'
   }
 });
 
