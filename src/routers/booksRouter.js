@@ -23,6 +23,6 @@ router
   .route('/:id')
   .get(booksController.getCertainBook)
   .patch(booksController.updateBook)
-  .delete(booksController.deleteCoverImage, booksController.deleteBook);
+  .delete(booksController.deleteBook, booksController.deleteCoverImage);
 
 module.exports = router;

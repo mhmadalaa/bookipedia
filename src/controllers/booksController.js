@@ -1,7 +1,7 @@
 const sharp = require('sharp');
+const fs = require('fs');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
-const deleteImage = require('./../utils/deleteImage');
 const pdfService = require('./../services/pdfService');
 const BookModel = require('./../models/BookModel');
 
@@ -140,13 +140,15 @@ exports.getBooksTitles = catchAsync(async (req, res, next) => {
 
 exports.deleteCoverImage = catchAsync(async (req, res, next) => {
   const filename = req.params.id;
-  console.log(deleteImage(`./src/public/img/covers/${filename}.peg`));
+  try {
+    fs.unlinkSync(`./src/public/img/covers/${filename}.jpeg`);
+  } catch (error) {
+    return next(new AppError('cover image not found', 404));
+  }
 
-  // if (!state) {
-  //   return next(new AppError('cover image not deleted', 404));
-  // }
-
-  next();
+  res.status(204).json({
+    message: 'Book is deleted successfully',
+  });
 });
 
 exports.deleteBook = catchAsync(async (req, res, next) => {
@@ -160,7 +162,5 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   req.fileId = book.file_id;
   pdfService.deleteFile(req, res, next);
 
-  res.status(204).json({
-    message: 'Book is deleted successfully',
-  });
+  next();
 });
