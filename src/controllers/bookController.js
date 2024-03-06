@@ -1,9 +1,9 @@
 const sharp = require('sharp');
 const fs = require('fs');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
-const pdfService = require('./../services/pdfService');
-const BookModel = require('./../models/BookModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+const pdfService = require('../services/pdfService');
+const BookModel = require('../models/BookModel');
 
 const multer = require('multer');
 
