@@ -16,13 +16,13 @@ router
     booksController.configMulter,
     pdfService.uploadFile,
     booksController.createBook,
-    booksController.handleCoverImage,
+    booksController.uploadCoverImage,
   );
 
 router
   .route('/:id')
   .get(booksController.getCertainBook)
   .patch(booksController.updateBook)
-  .delete(booksController.deleteBook);
+  .delete(booksController.deleteCoverImage, booksController.deleteBook);
 
 module.exports = router;

@@ -1,10 +1,9 @@
 const sharp = require('sharp');
-const pdfService = require('./../services/pdfService');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+const deleteImage = require('./../utils/deleteImage');
+const pdfService = require('./../services/pdfService');
 const BookModel = require('./../models/BookModel');
-// const CoverImageModel = require('./../models/ImageModel');
-
-// TODO: handle upload images to public folder
 
 const multer = require('multer');
 
@@ -30,11 +29,31 @@ exports.configMulter = upload.fields([
   { name: 'file', maxCount: 1 },
 ]);
 
-exports.handleCoverImage = catchAsync(async (req, res, next) => {
+exports.createBook = async (req, res, next) => {
+  try {
+    const book = await BookModel.create({
+      title: req.body.title,
+      author: req.body.author,
+      pages: req.body.pages,
+      size: req.body.size,
+      chapters: req.body.chapters,
+      category: req.body.category,
+      file_id: req.fileId,
+      description: req.body.description,
+    });
+    req.book = book;
+
+    next();
+  } catch (err) {
+    pdfService.deleteFile(req, res, next);
+    next(err);
+  }
+};
+
+exports.uploadCoverImage = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
 
   const fileBuffer = req.files.coverImage[0].buffer; // Access the file buffer
-  // console.log(req.files.coverImage[0]);
   const filename = `${req.book._id}.jpeg`;
 
   await sharp(fileBuffer)
@@ -49,45 +68,6 @@ exports.handleCoverImage = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createBook = async (req, res, next) => {
-  try {
-    const book = await BookModel.create({
-      title: req.body.title,
-      author: req.body.author,
-      pages: req.body.pages,
-      size: req.body.size,
-      chapters: req.body.chapters,
-      category: req.body.category,
-      file_id: req.fileId,
-      // coverImage_id: req.coverImage_id,
-      description: req.body.description,
-    });
-    req.book = book;
-
-    next();
-  } catch (err) {
-    pdfService.deleteFile(req, res, next);
-    next(err);
-  }
-};
-
-exports.deleteBook = catchAsync(async (req, res, next) => {
-  const book = await BookModel.findByIdAndDelete(req.params.id);
-  // TODO: delete image from public folder
-  // const coverImage = await CoverImageModel.findByIdAndDelete(req.coverImage_id);
-
-  if (!book) {
-    return res.status(404).json({
-      message: 'No book found',
-    });
-  }
-  req.fileId = book.file_id;
-  pdfService.deleteFile(req, res, next);
-  res.status(204).json({
-    message: 'Book is deleted successfully',
-  });
-});
-
 exports.getAllBooks = catchAsync(async (req, res, next) => {
   const books = await BookModel.find();
   if (books.length === 0) {
@@ -95,6 +75,7 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
       message: 'No books found',
     });
   }
+
   res.status(200).json({
     length: books.length,
     Books: books,
@@ -108,6 +89,7 @@ exports.getCertainBook = catchAsync(async (req, res, next) => {
       message: 'No book found',
     });
   }
+
   res.status(200).json({
     book,
   });
@@ -117,12 +99,14 @@ exports.updateBook = catchAsync(async (req, res, next) => {
   await BookModel.updateOne({ _id: req.params.id }, req.body, {
     runValidators: true,
   });
+
   const book = await BookModel.findById(req.params.id);
   if (!book) {
     return res.status(404).json({
       message: 'No book found',
     });
   }
+
   res.status(200).json({
     book,
   });
@@ -135,6 +119,7 @@ exports.displayBook = catchAsync(async (req, res, next) => {
       message: 'No book found',
     });
   }
+
   req.fileId = book.file_id;
   pdfService.displayFile(req, res, next);
 });
@@ -146,16 +131,36 @@ exports.getBooksTitles = catchAsync(async (req, res, next) => {
       message: 'No books found',
     });
   }
+
   res.status(200).json({
     length: books.length,
     Books: books,
   });
 });
 
-// exports.getCoverImages = catchAsync(async (req, res, next) => {
-//   const coverImages = await CoverImageModel.find();
-//   res.status(200).json({
-//     length: coverImages.length,
-//     Covers: coverImages,
-//   });
-// });
+exports.deleteCoverImage = catchAsync(async (req, res, next) => {
+  const filename = req.params.id;
+  console.log(deleteImage(`./src/public/img/covers/${filename}.peg`));
+
+  // if (!state) {
+  //   return next(new AppError('cover image not deleted', 404));
+  // }
+
+  next();
+});
+
+exports.deleteBook = catchAsync(async (req, res, next) => {
+  const book = await BookModel.findByIdAndDelete(req.params.id);
+
+  if (!book) {
+    return res.status(404).json({
+      message: 'No book found',
+    });
+  }
+  req.fileId = book.file_id;
+  pdfService.deleteFile(req, res, next);
+
+  res.status(204).json({
+    message: 'Book is deleted successfully',
+  });
+});
