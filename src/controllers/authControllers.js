@@ -1,46 +1,39 @@
 const userModel = require('./../models/userModel');
 const sendEmail = require('./../utils/email');
-const hashToken = require('./../utils/hashToken');
+const hashOtp = require('./../utils/hashOtp');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const catchAsync = require('./../utils/catchAsync');
 
+
 const createSendToken = (res, status, user) => {
   const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-    expiresIn: process.env.EXPIRE_IN,
-  });
-
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
-    ),
-    httpOnly: true,
-  };
-
-  res.cookie('jwt', token, cookieOptions);
+    expiresIn: process.env.EXPIRE_IN});
 
   res.status(status).json({
     status: 'success',
-    user
+    user ,
+    token
   });
 };
 
-const sendEmailWithToken = async (user ,token ,res) => {
+const sendEmailWithOtp = async (user ,otp ,res) => {
   try {
     await sendEmail({
       email:user.email,
       subject: 'Email Confirm',
-      message: `That's a 10 minutes valid token ${token} to Confirm your Email`,
+      message: `That's a 10 minutes valid otp ${otp} `,
     });
   
     res.status(200).json({
       status: 'success',
       message: 'An email will be send to complete the steps'
     });
-  } catch (err) {
-    user.tokenExpires = undefined;
-    user.token = undefined;
-    user.save({ validateBeforeSave: false });
+  } 
+  catch (err) {
+    user.otpExpires = undefined;
+    user.otp = undefined;
+    await user.save({ validateBeforeSave: false });
     res.status(500).json({
       status: 'fail',
       message:
@@ -59,20 +52,19 @@ exports.signup = catchAsync(async (req, res ,next) => {
   });
   newUser.authenticated = false;
 
-  const confirmToken = newUser.createToken();
-  newUser.save({ validateBeforeSave: false });
+  const otp = newUser.createOtp();
+  await newUser.save({ validateBeforeSave: false });
 
   try {
     await sendEmail({
       email:newUser.email,
       subject: 'Email Confirm',
-      message: `That's a 10 minutes valid token ${confirmToken} to Confirm your Email`,
+      message: `That's a 10 minutes valid otp ${otp} to Confirm your Email`,
     });
 
     res.status(200).json({
       status: 'success',
       message: 'An email will be send to complete the steps',
-      newUser
     });
   } catch (err) {
     await userModel.findByIdAndDelete(newUser._id);
@@ -86,28 +78,28 @@ exports.signup = catchAsync(async (req, res ,next) => {
 
 exports.confirmSignup = catchAsync(async (req, res, next) => {
 
-  const hashedToken = hashToken(req.body.token);
+  const hashedOtp = hashOtp(req.body.otp);
 
   const user = await userModel.findOne({
-    token: hashedToken,
-    tokenExpires: { $gt:Date.now() },
+    otp: hashedOtp,
+    otpExpires: { $gt:Date.now() },
   });
   if (!user) {
     return res.status(401).json({
       status :'fail' ,
-      'message' :'Token is invalide or has been expired!'
+      'message' :'Otp is invalide or has been expired!'
     });
   }
 
   user.authenticated = true;
-  user.token = undefined;
-  user.tokenExpires = undefined;
+  user.otp = undefined;
+  user.otpExpires = undefined;
   await user.save({ validateBeforeSave: false });
 
   createSendToken(res, 201, user);
 });
 
-exports.resendToken = catchAsync(async (req , res , next) => {
+exports.resendOtp = catchAsync(async (req , res , next) => {
  
   const user = await userModel.findOne({email :req.body.email});
   if (!user) {
@@ -116,10 +108,10 @@ exports.resendToken = catchAsync(async (req , res , next) => {
       'message' :'There is no user with that email address'
     });
   }
-  const confirmToken = user.createToken();
+  const confirmOtp = user.createOtp();
   user.save({validateBeforeSave:false});
 
-  sendEmailWithToken(user ,confirmToken , res);
+  sendEmailWithOtp(user ,confirmOtp , res);
 });
 
 exports.login = catchAsync(async (req, res ,next) => {
@@ -163,15 +155,15 @@ exports.login = catchAsync(async (req, res ,next) => {
 });
 
 exports.isLogin = catchAsync(async (req, res, next) => {
-  
-  if (req.headers.cookie === undefined || req.headers.cookie.split('=')[1] === 'logout') {
+
+  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer')) {
     return res.status(401).json({
       status: 'fail',
       message: 'You must be logged in to access this page',
     });
   }
-
-  const token = req.headers.cookie.split('=')[1];
+  
+  const token = req.headers.authorization.split(' ')[1];
   const decode = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
   const user = await userModel.findById(decode.id);
   if (!user || !user.authenticated) {
@@ -191,16 +183,6 @@ exports.isLogin = catchAsync(async (req, res, next) => {
   req.user = user;
   next();
 });
-
-exports.logout = (req, res) => {
-  const cookieOptions = {
-    expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true,
-  };
-
-  res.cookie('jwt', 'logout', cookieOptions);
-  res.status(200).json({ status: 'success' });
-};
 
 exports.updateUser = catchAsync(async (req, res, next) => {
 
@@ -225,7 +207,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
-// FORGOT AND REST PASSWORD IS FOR CHANGING THE PASSWORD THAT THE USER CAN'T REMEMBER
+
 exports.forgetPassword = async (req, res, next) => {
   
   const user = await userModel.findOne({ email: req.body.email });
@@ -235,25 +217,25 @@ exports.forgetPassword = async (req, res, next) => {
       message: 'There is no user with this email address!',
     });
   }
-  const resetToken = user.createToken();
-  user.save({ validateBeforeSave: false });
-  sendEmailWithToken(user ,resetToken , res);
+  const resetOtp = user.createOtp();
+  await user.save({ validateBeforeSave: false });
+  sendEmailWithOtp(user ,resetOtp , res);
 
 };
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   
-  const hashedToken = hashToken(req.body.resetToken);
+  const hashedOtp = hashOtp(req.body.otp);
 
   const user = await userModel.findOne({
-    token: hashedToken,
-    tokenExpires: { $gt: Date.now() },
+    otp: hashedOtp,
+    otpExpires: { $gt: Date.now() },
   });
 
   if (!user) {
     return res.status(401).json({
       status: 'fail',
-      message: 'Token is invalide or has been expired!',
+      message: 'Otp is invalide or has been expired!',
     });
   }
 
@@ -261,8 +243,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = req.body.passwordConfirm;
 
   if (user.password && user.password === user.passwordConfirm) {
-    user.token = undefined;
-    user.tokenExpires = undefined;
+    user.otp = undefined;
+    user.otpExpires = undefined;
     await user.save({validateBeforeSave :false});
   } else {
     return res.status(400).json({
@@ -276,34 +258,33 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.changeEmail = catchAsync(async (req, res, next) => {
 
   const user = await userModel.findById(req.user._id);
-  const resetToken = user.createToken();
-  user.save({ validateBeforeSave: false });
-  sendEmailWithToken(user ,resetToken , res);
+  const resetOtp = user.createOtp();
+  await user.save({ validateBeforeSave: false });
+  sendEmailWithOtp(user ,resetOtp , res);
 
 });
 
 
 exports.resetEmail = catchAsync(async (req, res, next) => {
 
-  const hashedToken = hashToken(req.body.resetToken);
-
+  const hashedOtp = hashOtp(req.body.otp);
   const user = await userModel.findOne({
-    emailResetToken: hashedToken,
-    emailResetExpires: { $gt: Date.now() },
+    otp: hashedOtp,
+    otpExpires: { $gt: Date.now() },
   });
 
   if (!user) {
     return res.status(401).json({
       status: 'fail',
-      message: 'Token is invalide or has been expired!',
+      message: 'Otp is invalide or has been expired!',
     });
   }
 
   user.email = req.body.email;
 
   if (user.email) {
-    user.token = undefined;
-    user.tokenExpires = undefined;
+    user.otp = undefined;
+    user.otpExpires = undefined;
     await user.save({ validateBeforeSave: false });
   } 
   else {
@@ -315,11 +296,10 @@ exports.resetEmail = catchAsync(async (req, res, next) => {
   createSendToken(res, 200, user);
 });
 
-// UPDATE THE PASSWORD FOR THE LOGGED IN USER WHO KNOW THE CURRENT PASSWORD
+
 exports.updatePassword = catchAsync(async (req, res, next) => {
 
   const user = await userModel.findById(req.user._id).select('+password');
-  
   if (
     !user ||
     !(await user.correctPassword(req.body.password, user.password))
@@ -331,7 +311,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   }
   if (req.body.newPassword === req.body.newPasswordConfirm) {
     user.password = req.body.newPassword;
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
   } else {
     return res.status(400).json({
       status: 'fail',
