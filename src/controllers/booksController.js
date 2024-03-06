@@ -36,21 +36,14 @@ exports.handleCoverImage = catchAsync(async (req, res, next) => {
   // when using multer memorysotrage it doens't add filename
   // so we should add it manually to fit with the other functions
   const fileBuffer = req.files.coverImage[0].buffer; // Access the file buffer
-  const filename = req.files.coverImage[0].originalname;
-
-  console.log(req.files.coverImage[0]);
-
-  // req.file.filename = `book-cover-${Date.now()}.jpeg`;
-
-  // when uploading files and will do operations to it
-  // using multer middleware, it's better to keep it in
-  // memory rather than to disk directly
+  // const filename = `${req.files.coverImage[0].file}.jpeg`;
+  const filename = 'coverx.jpeg';
 
   await sharp(fileBuffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile(`public/img/book-cover/${filename}`);
+    .toFile(`./src/public/img/covers/${filename}`);
 
   next();
 });

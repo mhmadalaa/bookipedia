@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 
 const auth = require('./routers/auth');
 const booksRouter = require('./routers/booksRouter');
@@ -11,7 +12,9 @@ const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use(express.json());
+// Serve static files from `public` dir without routing
+app.use(express.static(path.join(__dirname, './public')));
+
 app.use(
   express.urlencoded({
     extended: false,
