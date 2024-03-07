@@ -13,7 +13,7 @@ mongoose
   .then(() => {
     console.log('↪ connected to database ✔');
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.log('✗ ', err));
 
 app.get('/', (req, res) => {
   // This code will be executed when a GET request is made to the base URL
@@ -23,5 +23,4 @@ app.get('/', (req, res) => {
 // START SERVER
 app.listen(process.env.PORT | 3000, () => {
   console.log(`↪ server is running on port ${process.env.PORT | 3000} 🚀`);
-}); 
-  
+});
