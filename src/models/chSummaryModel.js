@@ -30,6 +30,6 @@ const chSummarySchema = new mongoose.Schema({
 // each chapter in the book has only one summary stored
 chSummarySchema.index({ book: 1, chapter: 1 }, { unique: true });
 
-const ChapterSummary = mongoose.model('ChapterSummary', chSummarySchema);
+const ChapterSummary = mongoose.model('Chapter-Summary', chSummarySchema);
 
 module.exports = ChapterSummary;

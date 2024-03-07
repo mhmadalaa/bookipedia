@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-// const {bookipediaConnection} = require('./../db/connections');
 const slugify = require('slugify');
-
+// const {bookipediaConnection} = require('./../db/connections');
 
 const BookSchema = new mongoose.Schema({
   title: {
@@ -31,12 +30,8 @@ const BookSchema = new mongoose.Schema({
     required :[true , 'You should provide the description']
   },
   file_id : {
-    type :String
+    type: mongoose.Schema.ObjectId,
   },
-  coverImage_id :{
-    type :mongoose.Schema.ObjectId ,
-    ref :'Cover-Image'
-  }
 });
 
 BookSchema.pre('save' ,function(next) {
