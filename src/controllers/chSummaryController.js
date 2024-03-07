@@ -1,7 +1,8 @@
+const mongoose = require('mongoose');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const ChapterSummary = require('../models/chSummaryModel');
-const AppError = require('../utils/appError');
-const mongoose = require('mongoose');
+const Book = require('./../models/BookModel');
 
 const chapterSummaryFiltering = (req) => {
   return {
@@ -12,28 +13,27 @@ const chapterSummaryFiltering = (req) => {
   };
 };
 
-const checkChapterAvailability = (req, res) => {
-  // TODO: get the book chapters from book model
-  //       const bookChapters = await BookModel.findById(req.params.book_id);
-  const bookChapters = 15; // FIXME: assume that all books has `15` chapters until we connect with book model
+exports.checkAvailability = catchAsync(async (req, res, next) => {
+  const book = await Book.findById(
+    new mongoose.Types.ObjectId(req.params.book_id),
+  );
+  req.params.chapter = parseInt(req.params.chapter);
 
-  // case of unavilable chapter
-  if (req.params.chapter <= 0 || req.params.chapter > bookChapters) {
-    res.status(404).json({
-      message: 'fail',
-      content: `That is not an avilable chapter in this book, availabe from ${1} to ${bookChapters}`,
-    });
-
-    return 0;
+  if (book === null) {
+    next(new AppError('That is not an avilable book'), 404);
+  } else if (req.params.chapter <= 0 || req.params.chapter > book.chapters) {
+    next(
+      new AppError(
+        `That is not an avilable chapter in this book, availabe from ${1} to ${book.chapters}`,
+      ),
+      404,
+    );
   }
 
-  return 1;
-};
+  next();
+});
 
 exports.createChapterSummary = catchAsync(async (req, res, next) => {
-  // check if this chapter available in this book
-  if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model
-
   const summary = await ChapterSummary.create(chapterSummaryFiltering(req));
 
   res.status(202).json({
@@ -43,9 +43,6 @@ exports.createChapterSummary = catchAsync(async (req, res, next) => {
 });
 
 exports.updateChapterSummary = catchAsync(async (req, res, next) => {
-  // check if this chapter available in this book
-  if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model
-
   await ChapterSummary.findOneAndUpdate(
     { book: req.params.book_id, chapter: req.params.chapter },
     chapterSummaryFiltering(req),
@@ -84,9 +81,6 @@ exports.deleteChapterSummary = catchAsync(async (req, res, next) => {
 });
 
 exports.getChapterSummary = catchAsync(async (req, res, next) => {
-  // check if this chapter available in this book
-  if (!checkChapterAvailability(req, res)) return; // TODO: check await while link with book model
-
   // query book chapters summary
   const summary = await ChapterSummary.findOne({
     book: req.params.book_id,
@@ -107,6 +101,18 @@ exports.getChapterSummary = catchAsync(async (req, res, next) => {
     message: 'success',
     summary,
   });
+});
+
+exports.isBookAvilable = catchAsync(async (req, res, next) => {
+  const book = await Book.findById(
+    new mongoose.Types.ObjectId(req.params.book_id),
+  );
+
+  if (book === null) {
+    next(new AppError('That is not an avilable book'), 404);
+  }
+
+  next();
 });
 
 exports.bookChaptersSummary = catchAsync(async (req, res) => {
