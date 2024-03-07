@@ -5,9 +5,13 @@ const chapterSummaryController = require('../controllers/chSummaryController');
 
 const router = express();
 
-router.route('/question').get(questionController.askQuestion);
-router.route('/chat/:id').get(questionController.reteriveChat);
-// router.route('/chat/document/:document_id').get(questionController.reteriveDocumentChat);
+// in question and chat there will be query strnig in req `?type=book` or `?type=document`
+router
+  .route('/question/:id')
+  .get(questionController.enforceQueryParams, questionController.askQuestion);
+router
+  .route('/chat/:id')
+  .get(questionController.enforceQueryParams, questionController.reteriveChat);
 router.route('/tts').get(textToSpeechController.textToSpeech);
 
 /*
