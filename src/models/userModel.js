@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
-const crypto = require('crypto');
-const hashToken = require('./../utils/hashToken');
+const hashOtp = require('../utils/hashOtp');
+const otpGenerator = require('otp-generator');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'User must have a name'],
-    minlength: [5, 'User name must be at least 5 characters'],
+    minlength: [2, 'User name must be at least 2 characters'],
     maxlength: [15, 'User name must be at most 15 characters'],
   },
   email: {
@@ -43,8 +43,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
-  token :String ,
-  tokenExpires :Date ,
+  otp :String ,
+  otpExpires :Date ,
 
   createdAt :{
     type :Date ,
@@ -89,14 +89,17 @@ userSchema.methods.correctPassword = async function (
 };
 
 
-userSchema.methods.createToken = function () {
-  const Token = crypto.randomBytes(32).toString('hex');
+userSchema.methods.createOtp = function () {
+  const Otp = otpGenerator.generate(6,
+    {upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,});
 
-  this.token = hashToken(Token);
+  this.otp = hashOtp(Otp);
 
-  this.tokenExpires = Date.now() + 10 * 60 * 1000;
+  this.otpExpires = Date.now() + 10 * 60 * 1000;
 
-  return Token;
+  return Otp;
 };
 
 module.exports = mongoose.model('User', userSchema);

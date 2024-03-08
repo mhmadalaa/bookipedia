@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/signup' ,authController.signup);
 router.post('/confirm-your-account' , authController.confirmSignup);
-router.post('/resend-verification-email' ,authController.resendToken);
+router.post('/resend-verification-email' ,authController.resendOtp);
 router.post('/login' , authController.login);
 
 
@@ -20,6 +20,5 @@ router.patch('/update-user-data' ,authController.updateUser);
 
 router.patch('/update-password' ,authController.updatePassword);
 
-router.get('/logout' ,authController.isLogin ,authController.logout);
 
 module.exports = router;
