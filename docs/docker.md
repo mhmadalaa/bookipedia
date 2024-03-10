@@ -1,4 +1,3 @@
 # containarization documentations
 
-- building container: `docker-compose build``
-- running container: `docker-compose up`
+- running container: `docker-compose build && docker-compose up`
