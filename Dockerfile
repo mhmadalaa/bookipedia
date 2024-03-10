@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as the base image
-FROM node:latest
+FROM node:18
 
 # Set the working directory in the Docker image
 WORKDIR /usr/src/app
