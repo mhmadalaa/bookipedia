@@ -16,7 +16,7 @@
 
 ## Features ✨
 Explore Enhanced AI Capabilities for Book Study\
-Discover a range of AI-driven features designed to enrich your study experience:
+Discover a range of AI-driven features designed to enrich your study experience
 
 User Capabilities:
 - Handwritten PDF Upload with OCR  Seamlessly upload handwritten PDF files and apply Optical Character Recognition (OCR) technology.
