@@ -21,6 +21,10 @@ app.get('/', (req, res) => {
   res.send('welcome to bookipedia app');
 });
 
+app.get('/deploy', function(req, res) {
+  res.send('This is a GET request');
+});
+
 // START SERVER
 app.listen(process.env.PORT | 3000, () => {
   console.log(`↪ server is running on port ${process.env.PORT | 3000} 🚀`);
