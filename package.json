@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start:dev": "NODE_ENV=development nodemon index.js",
-    "start:prod": "NODE_ENV=production nodemon index.js",
+    "start:dev:windows": "SET NODE_ENV=development&&nodemon index.js",
+    "start:prod:windows": "SET NODE_ENV=production&&nodemon index.js",
+    "start:dev:linux": "NODE_ENV=development nodemon index.js",
+    "start:prod:linux": "NODE_ENV=production nodemon index.js",
     "debug": "ndb index.js",
     "dev": "node .",
     "test": "echo \"Error: no test specified\""
