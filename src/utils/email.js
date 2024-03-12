@@ -27,7 +27,7 @@ const sendEmail = async (options) => {
 
   // 2. Define the email options
   const mailOptions = {
-    from: 'Bookipedia <mhmaaddalaa@gmail.com>',
+    from: 'Bookipedia <bookipedia-backend@gmail.com>',
     to: options.email,
     subject: options.subject,
     text: options.message,
