@@ -38,7 +38,7 @@ User Capabilities:
 -   [Postman](https://www.postman.com/)
 -   [VSCode](https://code.visualstudio.com/)
 
-## Installation 🚀
+## Installation 📥
 
 To install Bookipedia-API, follow these simple steps:
 
@@ -57,5 +57,5 @@ To install Bookipedia-API, follow these simple steps:
 
 4. Start the application in development mode:
    ```bash
-   $ npm run start:dev
+   $ npm run start
    ```
