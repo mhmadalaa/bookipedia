@@ -1,7 +1,6 @@
 <h1 align="center">Hi <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="35"> , We Are Bookipedia team</h1>
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&pause=500&color=2D90E4&random=false&width=435&lines=Bookipedia+Backend+API.)](https://git.io/typing-svg)
---- 
 
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
@@ -14,18 +13,16 @@
 ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
----
 
 ## Features ✨
+Explore Enhanced AI Capabilities for Book Study\
+Discover a range of AI-driven features designed to enrich your study experience
 
-The system serves different type of AI features to get a great experience in studying books
-    
- As a User I can
-- Upload hand written pdf files and apply ocr to it
-- Use official books that provided by the app
-- With the previous two methods of getting files has the ability to use  the latest AI methodologies to ask questions for anything in books
-- apply text to speech in any text in the books
-
+User Capabilities:
+- Handwritten PDF Upload with OCR  Seamlessly upload handwritten PDF files and apply Optical Character Recognition (OCR) technology.
+- Access Official Books: Utilize a collection of official books provided by the application.
+- Cutting-edge AI Methodologies: Employ the latest AI methodologies to generate questions from uploaded files and official books.
+- Text-to-Speech Functionality: Enjoy the convenience of converting any text within books into speech for enhanced accessibility and learning.
 
 
 ## Tech/Framework used 🧰
@@ -40,20 +37,25 @@ The system serves different type of AI features to get a great experience in stu
 -   [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 -   [Postman](https://www.postman.com/)
 -   [VSCode](https://code.visualstudio.com/)
--   [Mailtrap](https://mailtrap.io/)
 
-## Installation
+## Installation 🚀
 
-- To install bookipedia-api, follow these steps:
+To install Bookipedia-API, follow these simple steps:
 
-   ```bash
+1. Clone the repository:
+   ``` bash
    $ git clone <repo-link>
    $ cd <app-directory>
-   $ npm install
    ```
 
- - Set up environment variables in .env file
+2. Install dependencies:
 
-- Start the application:
+   ``` bash
+   $ npm install
+   ```
+3. Set up environment variables in the `.env` file.
+
+4. Start the application in development mode:
    ```bash
-   npm run start:dev
+   $ npm run start:dev
+   ```
