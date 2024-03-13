@@ -46,6 +46,10 @@ app.post('/deploy', function(req, res) {
   }
 });
 
+app.get('/deploy', (req, res) => {
+  res.send('GET request to the /deploy endpoint');
+});
+
 // START SERVER
 app.listen(process.env.PORT | 3000, () => {
   console.log(`↪ server is running on port ${process.env.PORT | 3000} 🚀`);
