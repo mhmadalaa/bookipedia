@@ -18,4 +18,5 @@ jobs:
           DEPLOYMENT_KEY: ${{ secrets.DEPLOYMENT_KEY }}
           DEPLOYMENT_URL: ${{ secrets.DEPLOYMENT_URL }}
         run: |
+          echo "DEPLOYMENT_URL: $DEPLOYMENT_URL"
           curl -X POST -H "Content-Type: application/json" -d '{"secret_key":"${DEPLOYMENT_KEY}"}' $DEPLOYMENT_URL

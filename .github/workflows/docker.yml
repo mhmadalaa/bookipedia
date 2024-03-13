@@ -20,4 +20,8 @@ jobs:
           services: |
             app
       - name: Run docker-compose up
-        run: docker-compose up
+        run: |
+          echo VAR1=${{ secrets.VAR1 }} >> .env
+          echo VAR2=${{ secrets.VAR2 }} >> .env
+          # Add more variables as needed
+          docker-compose up
