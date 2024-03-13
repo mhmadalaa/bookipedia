@@ -18,7 +18,7 @@ mongoose
 
 app.get('/', (req, res) => {
   // This code will be executed when a GET request is made to the base URL
-  res.send('welcome to bookipedia app');
+  res.send('welcome to bookipedia app.');
 });
 
 app.get('/deploy', function(req, res) {
@@ -28,4 +28,5 @@ app.get('/deploy', function(req, res) {
 // START SERVER
 app.listen(process.env.PORT | 3000, () => {
   console.log(`↪ server is running on port ${process.env.PORT | 3000} 🚀`);
+  console.log(`↪ NODE_ENV → ${process.env.NODE_ENV} 🔨`);
 });
