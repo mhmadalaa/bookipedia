@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - deploy
 
 jobs:
   post_request:
