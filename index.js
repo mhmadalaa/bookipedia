@@ -18,7 +18,7 @@ mongoose
 
 app.get('/', (req, res) => {
   // This code will be executed when a GET request is made to the base URL
-  res.send('welcome to bookipedia app.');
+  res.send('welcome to bookipedia app');
 });
 
 // deployment setup
