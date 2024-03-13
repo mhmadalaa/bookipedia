@@ -15,7 +15,7 @@ jobs:
 
       - name: Send POST request
         env:
-          SECRET_KEY: ${{ secrets.DEPLOYMENT_KEY }}
+          DEPLOYMENT_KEY: ${{ secrets.DEPLOYMENT_KEY }}
           DEPLOYMENT_URL: ${{ secrets.DEPLOYMENT_URL }}
         run: |
-          curl -X POST -H "Content-Type: application/json" -d '{"secret_key":"${SECRET_KEY}"}' $DEPLOYMENT_URL
+          curl -X POST -H "Content-Type: application/json" -d '{"secret_key":"${DEPLOYMENT_KEY}"}' $DEPLOYMENT_URL
