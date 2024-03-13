@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x  # Enable printing of commands
+# set -x  # Enable printing of commands
 
 
 # rm old repo
