@@ -6,6 +6,7 @@ const authRouter = require('./routers/authRoute');
 const bookRouter = require('./routers/bookRoute');
 const aiRouter = require('./routers/aiRoute');
 const documentRouter = require('./routers/documentRoute');
+const deployRouter = require('./routers/deployRoute');
 
 const app = express();
 
@@ -26,6 +27,9 @@ app.use('/document', documentRouter);
 app.use('/book', bookRouter);
 app.use('/auth', authRouter);
 app.use('/ai', aiRouter);
+
+// deployement router managed by github-workflow
+app.use('/deploy', deployRouter);
 
 // NOT FOUND ROUTERS ERROR HANDLER
 app.use((err, req, res, next) => {
