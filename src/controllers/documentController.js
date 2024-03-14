@@ -26,20 +26,24 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     title: req.files.file[0].originalname,
     original_id: req.fileId,
     ocr_id: req.fileId,
-    user: '65cfa8d7673213203967414c',
+    user: req.user._id,
   });
 
   res.status(202).json({
-    msg: 'sucess',
+    message: 'sucess',
     document,
   });
 });
 
 exports.displayDocument = catchAsync(async (req, res, next) => {
-  const document = await DocumentModel.findById(req.params.id);
+  const document = await DocumentModel.findOne({
+    _id: req.params.id,
+    user: req.user._id,
+  });
+
   if (!document) {
     return res.status(404).json({
-      message: 'No document found',
+      message: 'No document found for this user with that id!',
     });
   }
 
@@ -48,10 +52,14 @@ exports.displayDocument = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteDocument = catchAsync(async (req, res, next) => {
-  const document = await DocumentModel.findByIdAndDelete(req.params.id);
+  const document = await DocumentModel.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user._id,
+  });
+
   if (!document) {
     return res.status(404).json({
-      message: 'No document found',
+      message: 'No document found for this user with the given id',
     });
   }
 
@@ -63,8 +71,7 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllDocuments = catchAsync(async (req, res, next) => {
-  // FIXME: replace user with logged in user
-  const user = '65cfa8d7673213203967414c';
+  const user = req.user._id;
 
   const documents = await DocumentModel.find({ user: user });
   if (documents.length === 0) {

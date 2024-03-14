@@ -1,8 +1,11 @@
 const express = require('express');
 const documentController = require('../controllers/documentController');
+const authController = require('./../controllers/authControllers');
 const pdfService = require('../services/pdfService');
 
-const router = express();
+const router = express.Router();
+
+router.use(authController.isLogin);
 
 router.get('/file/:id', documentController.displayDocument);
 
