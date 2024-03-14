@@ -13,7 +13,13 @@ jobs:
     steps:
       # need checkout before using compose-action
       - uses: actions/checkout@v3
-      - name: Create .env file
+      - uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: "./docker-compose.yml"
+          down-flags: "--volumes"
+          services: |
+            app
+      - name: Run docker-compose up
         run: |
           echo VAR1=${{ secrets.DATABASE }} >> .env
           echo VAR2=${{ secrets.OPENAI_API_KEY }} >> .env
@@ -29,14 +35,5 @@ jobs:
           echo VAR2=${{ secrets.JWT_COOKIE_EXPIRES_IN }} >> .env
           echo VAR2=${{ secrets.DEPLOYMENT_URL }} >> .env
           echo VAR2=${{ secrets.DEPLOYMENT_KEY }} >> .env
-
           # Add more variables as needed
-      - uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes"
-          services: |
-            app
-          env-file: .env
-      - name: Run docker-compose up
-        run: docker-compose up
+          docker-compose up
