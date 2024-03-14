@@ -7,7 +7,8 @@ const AppError = require('../utils/appError');
 const questionFiltering = (req) => {
   // FIXME: we will now the requsested user from the pre authenticate middleware
   //        so we will assume it right now
-  const user = '65bac7fc9e0596718c2769ce';
+  // const user = '65bac7fc9e0596718c2769ce';
+  const user = req.user._id; 
 
   return {
     question: req.body.question,
@@ -39,7 +40,8 @@ exports.askQuestion = catchAsync(async (req, res) => {
 exports.reteriveChat = catchAsync(async (req, res) => {
   // FIXME: we will now the requsested user from the pre authenticate middleware
   //        so we will assume it right now
-  const user = '65bac7fc9e0596718c2769ce';
+  // const user = '65bac7fc9e0596718c2769ce';
+  const user = req.user._id; 
 
   const book = req.query.type === 'book';
   const document = req.query.type === 'document';
