@@ -11,18 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # need checkout before using compose-action
-      - uses: actions/checkout@v3
-      - uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes"
-          services: |
-            app
-      - name: Run docker-compose up
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create .env file
         run: |
-          pwd
-          ls
           echo VAR1=${{ secrets.DATABASE }} >> .env
           echo VAR2=${{ secrets.OPENAI_API_KEY }} >> .env
           echo VAR2=${{ secrets.EMAIL_HOST_DEV }} >> .env
@@ -38,4 +31,12 @@ jobs:
           echo VAR2=${{ secrets.DEPLOYMENT_URL }} >> .env
           echo VAR2=${{ secrets.DEPLOYMENT_KEY }} >> .env
           # Add more variables as needed
-          docker-compose up
+
+      - name: Run docker-compose
+        uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: "./docker-compose.yml"
+          down-flags: "--volumes"
+          services: |
+            app
+          env-file: .env
