@@ -38,5 +38,5 @@ jobs:
           compose-file: "./docker-compose.yml"
           down-flags: "--volumes"
           services: |
-            app
+            server
           env-file: .env
