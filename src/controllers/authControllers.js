@@ -49,6 +49,7 @@ exports.signup = catchAsync(async (req, res ,next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     email: req.body.email,
+    createdAt  : Date.now()
   });
   newUser.authenticated = false;
 

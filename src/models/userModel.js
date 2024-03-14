@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'User must have a password'],
     minlength: 8,
-    // select: false,
   },
   passwordConfirm: {
     type: String,
@@ -44,10 +43,7 @@ const userSchema = new mongoose.Schema({
   },
   otp :String ,
   otpExpires :Date ,
-  createdAt :{
-    type :Date ,
-    default :Date.now()
-  },
+  createdAt :Date ,
   active: {
     type: Boolean,
     default: true,
