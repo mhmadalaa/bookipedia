@@ -1,25 +1,16 @@
-name: Server
-
+name: Remote Deployment
 on:
   push:
-    branches:
-      - main
-      - deploy
-
+    branches: [ "main", "deploy" ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.3
+    - uses: masterjanic/docker-compose-ssh-deployment@master
+      name: Docker-Compose Remote Deployment
       with:
-        ssh-private-key: ${{ secrets.SSH }}
-
-    - name: Deploy to Server
-      run: |
-        ssh -o StrictHostKeyChecking=no user@185.69.167.154 "cd ~/app/bookipedia && git pull"
-        ssh -o StrictHostKeyChecking=no user@185.69.167.154 "cd ~/app/bookipedia && docker-compose up -d --build"
+        ssh_host: ${{ secrets.HOST }}
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh_user: ${{ secrets.SSH_USER }}
