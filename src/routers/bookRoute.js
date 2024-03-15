@@ -33,4 +33,9 @@ router
   .patch(bookController.updateBook)
   .delete(bookController.deleteBook, bookController.deleteCoverImage);
 
+router
+  .route('/:id/user')
+  .put(authController.isLogin, bookController.addUserBook)
+  .delete(authController.isLogin, bookController.removeUserBook);
+
 module.exports = router;

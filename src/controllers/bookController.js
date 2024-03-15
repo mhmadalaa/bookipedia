@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const pdfService = require('../services/pdfService');
 const BookModel = require('../models/BookModel');
+const User = require('../models/userModel');
 
 const multer = require('multer');
 
@@ -163,4 +164,46 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   pdfService.deleteFile(req, res, next);
 
   next();
+});
+
+exports.addUserBook = catchAsync(async (req, res, next) => {
+  const book = await BookModel.findById(req.params.id);
+
+  if (!book) {
+    return res.status(404).json({
+      message: 'No book found',
+    });
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $addToSet: { books: req.params.id } },
+    { new: true },
+  );
+
+  res.status(202).json({
+    message: 'Book is added successfully to the user',
+    booksList: user.books,
+  });
+});
+
+exports.removeUserBook = catchAsync(async (req, res, next) => {
+  const book = await BookModel.findById(req.params.id);
+
+  if (!book) {
+    return res.status(404).json({
+      message: 'No book found',
+    });
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $pull: { books: req.params.id } },
+    { new: true },
+  );
+
+  res.status(202).json({
+    message: 'Book is removed successfully from the user',
+    booksList: user.books,
+  });
 });
