@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
 
-const auth = require('./routers/auth');
+const authRouter = require('./routers/authRoute');
 const bookRouter = require('./routers/bookRoute');
 const aiRouter = require('./routers/aiRoute');
 const documentRouter = require('./routers/documentRoute');
@@ -24,7 +24,7 @@ app.use(
 // APP ROUTERS
 app.use('/document', documentRouter);
 app.use('/book', bookRouter);
-app.use('/auth', auth);
+app.use('/auth', authRouter);
 app.use('/ai', aiRouter);
 
 // NOT FOUND ROUTERS ERROR HANDLER
