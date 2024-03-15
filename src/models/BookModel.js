@@ -32,6 +32,10 @@ const BookSchema = new mongoose.Schema({
   file_id : {
     type: mongoose.Schema.ObjectId,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now(), // FIXME: 
+  },
 });
 
 BookSchema.pre('save' ,function(next) {
