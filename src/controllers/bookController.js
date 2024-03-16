@@ -41,6 +41,7 @@ exports.createBook = async (req, res, next) => {
       category: req.body.category,
       file_id: req.fileId,
       description: req.body.description,
+      createdAt: Date.now(),
     });
     req.book = book;
 
@@ -97,6 +98,8 @@ exports.getCertainBook = catchAsync(async (req, res, next) => {
 });
 
 exports.updateBook = catchAsync(async (req, res, next) => {
+  if (req.body.createdAt) req.body.createdAt = Date.now();
+
   await BookModel.updateOne({ _id: req.params.id }, req.body, {
     runValidators: true,
   });

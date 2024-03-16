@@ -18,7 +18,7 @@ const documentSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now(), // FIXME: 
+    required: true,
   },
 });
 

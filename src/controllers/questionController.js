@@ -13,6 +13,7 @@ const questionFiltering = (req) => {
     document: req.body.document,
     book: req.body.book,
     user: user,
+    createdAt: Date.now(),
   };
 };
 

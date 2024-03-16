@@ -10,6 +10,7 @@ const chapterSummaryFiltering = (req) => {
     content: req.body.content,
     book: req.params.book_id,
     chapter: req.params.chapter,
+    createdAt: Date.now(),
   };
 };
 

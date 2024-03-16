@@ -27,6 +27,7 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     original_id: req.fileId,
     ocr_id: req.fileId,
     user: req.user._id,
+    createdAt: Date.now(),
   });
 
   res.status(202).json({
