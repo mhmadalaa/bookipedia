@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'User must have a password'],
     minlength: 8,
-    // select: false,
   },
   passwordConfirm: {
     type: String,
@@ -37,19 +36,14 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Please, check if password is the same.',
     },
-    // select: false,
   },
   passwordChangedAt: {
     type: Date,
     required: false,
   },
-  otp: String,
-  otpExpires: Date,
-
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
+  otp :String ,
+  otpExpires :Date ,
+  createdAt :Date ,
   active: {
     type: Boolean,
     default: true,
@@ -57,8 +51,7 @@ const userSchema = new mongoose.Schema({
   },
   authenticated: {
     type: Boolean,
-    default: true,
-    // select: false,
+    default: false,
   },
   books: [
     {
@@ -103,7 +96,7 @@ userSchema.methods.createOtp = function () {
 
   this.otp = hashOtp(Otp);
 
-  this.otpExpires = Date.now() + 10 * 60 * 1000;
+  this.otpExpires = Date.now() + 5 * 60 * 1000;
 
   return Otp;
 };
