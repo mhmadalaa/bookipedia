@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'User must have a password'],
     minlength: 8,
-    // select: false,
   },
   passwordConfirm: {
     type: String,
@@ -37,7 +36,6 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Please, check if password is the same.',
     },
-    // select: false,
   },
   passwordChangedAt: {
     type: Date,
@@ -45,11 +43,7 @@ const userSchema = new mongoose.Schema({
   },
   otp :String ,
   otpExpires :Date ,
-
-  createdAt :{
-    type :Date ,
-    default :Date.now()
-  },
+  createdAt :Date ,
   active: {
     type: Boolean,
     default: true,
@@ -57,16 +51,21 @@ const userSchema = new mongoose.Schema({
   },
   authenticated: {
     type: Boolean,
-    default: true,
-    // select: false,
+    default: false,
   },
+  books: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Book', // TODO: ref in mongoos
+    },
+  ],
 });
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined; 
+  this.passwordConfirm = undefined;
   this.passwordChangedAt = Date.now();
 
   next();
@@ -88,16 +87,16 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-
 userSchema.methods.createOtp = function () {
-  const Otp = otpGenerator.generate(6,
-    {upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,});
+  const Otp = otpGenerator.generate(6, {
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets: false,
+    specialChars: false,
+  });
 
   this.otp = hashOtp(Otp);
 
-  this.otpExpires = Date.now() + 10 * 60 * 1000;
+  this.otpExpires = Date.now() + 5 * 60 * 1000;
 
   return Otp;
 };

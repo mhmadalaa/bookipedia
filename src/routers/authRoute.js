@@ -13,7 +13,7 @@ router.post('/forget-password' , authController.forgetPassword);
 router.patch('/reset-password' , authController.resetPassword);
 
 router.use(authController.isLogin);
-router.get('/change-email' , authController.changeEmail);
+router.post('/change-email' , authController.changeEmail);
 router.patch('/reset-email' ,authController.resetEmail);
 
 router.patch('/update-user-data' ,authController.updateUser);

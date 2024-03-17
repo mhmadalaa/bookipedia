@@ -17,12 +17,12 @@ const createSendToken = (res, status, user) => {
   });
 };
 
-const sendEmailWithOtp = async (user ,otp ,res) => {
+const sendEmailWithOtp = async (user, otp ,res ,email) => {
   try {
     await sendEmail({
-      email:user.email,
+      email :email || user.email,
       subject: 'Email Confirm',
-      message: `That's a 10 minutes valid otp ${otp} `,
+      message: `That's a 5 minutes valid otp ${otp} `,
     });
   
     res.status(200).json({
@@ -49,6 +49,7 @@ exports.signup = catchAsync(async (req, res ,next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     email: req.body.email,
+    createdAt  : Date.now()
   });
   newUser.authenticated = false;
 
@@ -59,7 +60,7 @@ exports.signup = catchAsync(async (req, res ,next) => {
     await sendEmail({
       email:newUser.email,
       subject: 'Email Confirm',
-      message: `That's a 10 minutes valid otp ${otp} to Confirm your Email`,
+      message: `That's a 5 minutes valid otp ${otp} to Confirm your Email`,
     });
 
     res.status(200).json({
@@ -83,6 +84,7 @@ exports.confirmSignup = catchAsync(async (req, res, next) => {
   const user = await userModel.findOne({
     otp: hashedOtp,
     otpExpires: { $gt:Date.now() },
+    authenticated :false
   });
   if (!user) {
     return res.status(401).json({
@@ -108,8 +110,14 @@ exports.resendOtp = catchAsync(async (req , res , next) => {
       'message' :'There is no user with that email address'
     });
   }
+  if (user.authenticated) {
+    return res.status(400).json({
+      status :'fail' , 
+      message :'Your account is already authenticated'
+    });
+  }
   const confirmOtp = user.createOtp();
-  user.save({validateBeforeSave:false});
+  await user.save({validateBeforeSave:false});
 
   sendEmailWithOtp(user ,confirmOtp , res);
 });
@@ -210,7 +218,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 
 exports.forgetPassword = async (req, res, next) => {
   
-  const user = await userModel.findOne({ email: req.body.email });
+  const user = await userModel.findOne({ email: req.body.email , authenticated :true});
   if (!user) {
     return res.status(404).json({
       status: 'fail',
@@ -260,7 +268,7 @@ exports.changeEmail = catchAsync(async (req, res, next) => {
   const user = await userModel.findById(req.user._id);
   const resetOtp = user.createOtp();
   await user.save({ validateBeforeSave: false });
-  sendEmailWithOtp(user ,resetOtp , res);
+  sendEmailWithOtp(user ,resetOtp , res , req.body.newEmail);
 
 });
 
@@ -280,7 +288,7 @@ exports.resetEmail = catchAsync(async (req, res, next) => {
     });
   }
 
-  user.email = req.body.email;
+  user.email = req.body.newEmail;
 
   if (user.email) {
     user.otp = undefined;
