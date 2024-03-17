@@ -60,4 +60,5 @@ exports.deleteFile = catchAsync(async (req, res, next) => {
 
   await files.deleteOne({ _id: fileId });
   await chuncks.deleteMany({ files_id: fileId });
+
 });

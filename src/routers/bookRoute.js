@@ -15,14 +15,14 @@ router
   .post(
     bookController.configMulter,
     pdfService.uploadFile,
-    bookController.createBook,
     bookController.uploadCoverImage,
+    bookController.createBook,
   );
 
 router
   .route('/:id')
   .get(bookController.getCertainBook)
   .patch(bookController.updateBook)
-  .delete(bookController.deleteBook, bookController.deleteCoverImage);
+  .delete(bookController.deleteBook);
 
 module.exports = router;

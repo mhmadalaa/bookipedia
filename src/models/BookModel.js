@@ -32,6 +32,8 @@ const BookSchema = new mongoose.Schema({
   file_id : {
     type: mongoose.Schema.ObjectId,
   },
+  image_url  :String ,
+  impage_name :String
 });
 
 BookSchema.pre('save' ,function(next) {
