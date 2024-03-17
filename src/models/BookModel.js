@@ -33,7 +33,11 @@ const BookSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
   },
   image_url  :String ,
-  impage_name :String
+  impage_name :String ,
+  createdAt: {
+    type: Date,
+    required: true,
+  },
 });
 
 BookSchema.pre('save' ,function(next) {

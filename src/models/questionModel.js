@@ -25,7 +25,7 @@ const questionSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now(),
+    required: true,
     index: true, // index the date to retrieve the chat according to it
   },
 });

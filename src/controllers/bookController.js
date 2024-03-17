@@ -4,6 +4,7 @@ const AppError = require('../utils/appError');
 const pdfService = require('../services/pdfService');
 const {uploadImage , deleteImage} = require('../services/imageService');
 const BookModel = require('../models/BookModel');
+const User = require('../models/userModel');
 
 const multer = require('multer');
 
@@ -60,7 +61,8 @@ exports.createBook = async (req, res, next) => {
       file_id: req.fileId,
       description: req.body.description,
       image_url : req.url ,
-      impage_name :req.public_id
+      impage_name :req.public_id ,
+      createdAt: Date.now(),
     });
 
     res.status(201).json({
@@ -113,6 +115,8 @@ exports.getCertainBook = catchAsync(async (req, res, next) => {
 });
 
 exports.updateBook = catchAsync(async (req, res, next) => {
+  if (req.body.createdAt) req.body.createdAt = Date.now();
+
   await BookModel.updateOne({ _id: req.params.id }, req.body, {
     runValidators: true,
   });
@@ -173,5 +177,47 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status :'success',
     message :'Book deleted successfully'
+  });
+});
+
+exports.addUserBook = catchAsync(async (req, res, next) => {
+  const book = await BookModel.findById(req.params.id);
+
+  if (!book) {
+    return res.status(404).json({
+      message: 'No book found',
+    });
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $addToSet: { books: req.params.id } },
+    { new: true },
+  );
+
+  res.status(202).json({
+    message: 'Book is added successfully to the user',
+    booksList: user.books,
+  });
+});
+
+exports.removeUserBook = catchAsync(async (req, res, next) => {
+  const book = await BookModel.findById(req.params.id);
+
+  if (!book) {
+    return res.status(404).json({
+      message: 'No book found',
+    });
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $pull: { books: req.params.id } },
+    { new: true },
+  );
+
+  res.status(202).json({
+    message: 'Book is removed successfully from the user',
+    booksList: user.books,
   });
 });
