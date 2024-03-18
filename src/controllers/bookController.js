@@ -71,7 +71,8 @@ exports.createBook = async (req, res, next) => {
     });
     
   } catch (err) {
-    pdfService.deleteFile(req, res, next);
+    await pdfService.deleteFile(req, res, next);
+    await deleteImage(req.public_id);
     next(err);
   }
 };
@@ -82,6 +83,13 @@ exports.uploadCoverImage = catchAsync(async (req, res, next) => {
 
   req.public_id = public_id;
   req.url = url;
+
+  fs.unlink(req.files.coverImage[0].path ,
+    (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
 
   next();
 
@@ -142,7 +150,7 @@ exports.displayBook = catchAsync(async (req, res, next) => {
   }
 
   req.fileId = book.file_id;
-  pdfService.displayFile(req, res, next);
+  await pdfService.displayFile(req, res, next);
 });
 
 exports.getBooksTitles = catchAsync(async (req, res, next) => {
