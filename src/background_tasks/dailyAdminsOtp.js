@@ -1,27 +1,40 @@
 // sen daily
-const userModel = require('../models/AdminModel');
 const cron = require('node-cron');
+const Admin = require('../models/AdminModel');
+const sendEmail = require('../utils/email');
 
-async function cleanupUnverifiedUsers() {
+async function sendingDailyAdminEmails() {
   try {
-    //threshold to Guarantee that not deleting users stayed  in the database less than half hour
-    const threshold = Date.now() - 30 * 60 * 1000;
-    const returnedObj = await userModel.deleteMany({
-      authenticated: false,
-      createdAt: { $lt: new Date(threshold) },
+    const admins = await Admin.find({ active: true });
+    const adminsEmails = [];
+    admins.forEach((admin) => adminsEmails.push(admin.admin));
+
+    // TODO: create login-otp field
+    //       validate that if user has admin: true; then it must has login-otp
+
+    adminsEmails.forEach(async (email) => {
+      await sendEmail({
+        email: email,
+        subject: 'Email Confirm',
+        message: 'Daily admins otp',
+        // message: `That's a 5 minutes valid otp ${otp} `, // FIXME:
+      });
     });
-    console.log(`Cleanup task completed successfully at ${new Date()}`);
-    console.log(`${returnedObj.deletedCount}  unverified users are deleted`);
+
+    console.log(`daily admins otp sent to ${adminsEmails.length} admins`); // TODO:
   } catch (error) {
     console.log(Date.now());
-    console.error('Error occurred during cleanup', error);
+    console.error(
+      'Error occurred during sending daily login-otp emails to admins',
+      error,
+    );
   }
 }
 
-//const scheduleTime = '*/5 * * * *';   //run every 5 mints
+const scheduleTime = '*/1 * * * *'; //run every 5 mints
 
-const scheduleTime = '0 2 * * *'; //run at 2 am
+// const scheduleTime = '0 2 * * *'; //run at 2 am
 
 cron.schedule(scheduleTime, () => {
-  cleanupUnverifiedUsers();
+  sendingDailyAdminEmails();
 });

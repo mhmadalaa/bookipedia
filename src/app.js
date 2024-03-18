@@ -9,6 +9,10 @@ const documentRouter = require('./routers/documentRoute');
 const deployRouter = require('./routers/deployRoute');
 const adminRouter = require('./routers/adminRoute');
 
+// BACKGROUND TASKS
+require('./background_tasks/nonVerifiedUsers');
+require('./background_tasks/dailyAdminsOtp');
+
 const app = express();
 
 app.use(express.json());
