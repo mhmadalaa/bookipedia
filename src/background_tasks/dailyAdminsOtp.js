@@ -31,9 +31,9 @@ async function sendingDailyAdminEmails() {
   }
 }
 
-const scheduleTime = '*/1 * * * *'; //run every 5 mints
+// const scheduleTime = '*/1 * * * *'; //run every 5 mints
 
-// const scheduleTime = '0 2 * * *'; //run at 2 am
+const scheduleTime = '0 2 * * *'; //run at 2 am
 
 cron.schedule(scheduleTime, () => {
   sendingDailyAdminEmails();
