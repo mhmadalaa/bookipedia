@@ -5,11 +5,19 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const Admin = require('../models/AdminModel');
 
 const createSendToken = (res, status, user) => {
-  const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-    expiresIn: process.env.EXPIRE_IN,
-  });
+  let token;
+  if (user.admin === true) {
+    token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      expiresIn: process.env.ADMIN_JWT_EXPIRE_IN,
+    });
+  } else {
+    token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      expiresIn: process.env.EXPIRE_IN,
+    });
+  }
 
   res.status(status).json({
     status: 'success',
@@ -48,6 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     email: req.body.email,
     createdAt: Date.now(),
+    admin: req.admin,
   });
   newUser.authenticated = false;
 
@@ -87,6 +96,11 @@ exports.confirmSignup = catchAsync(async (req, res, next) => {
       status: 'fail',
       message: 'Otp is invalide or has been expired!',
     });
+  }
+
+  // activate the admin in admin list
+  if (user.admin === true) {
+    await Admin.findOneAndUpdate({ admin: user.email }, { active: true });
   }
 
   user.authenticated = true;
@@ -157,6 +171,7 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(res, 200, user);
 });
 
+// FIXME: when admin login as a normal user
 exports.isLogin = catchAsync(async (req, res, next) => {
   if (
     !req.headers.authorization ||
@@ -191,11 +206,11 @@ exports.isLogin = catchAsync(async (req, res, next) => {
 
 exports.isAdmin = catchAsync(async (req, res, next) => {
   req.user.admin = true; // FIXME:
-  if (req.user?.admin === true) {
+  if (req?.user?.admin === true) {
     next();
+  } else {
+    next(new AppError('That is not an admin user', 404));
   }
-
-  return next(new AppError('That is not an admin user', 404));
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
