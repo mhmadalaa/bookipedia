@@ -7,6 +7,7 @@ const bookRouter = require('./routers/bookRoute');
 const aiRouter = require('./routers/aiRoute');
 const documentRouter = require('./routers/documentRoute');
 const deployRouter = require('./routers/deployRoute');
+const adminRouter = require('./routers/adminRoute');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/document', documentRouter);
 app.use('/book', bookRouter);
 app.use('/auth', authRouter);
 app.use('/ai', aiRouter);
+app.use('/admin', adminRouter);
 
 // deployement router managed by github-workflow
 app.use('/deploy', deployRouter);

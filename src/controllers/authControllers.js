@@ -4,52 +4,50 @@ const hashOtp = require('./../utils/hashOtp');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const catchAsync = require('./../utils/catchAsync');
-
+const AppError = require('./../utils/appError');
 
 const createSendToken = (res, status, user) => {
   const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-    expiresIn: process.env.EXPIRE_IN});
+    expiresIn: process.env.EXPIRE_IN,
+  });
 
   res.status(status).json({
     status: 'success',
-    user ,
-    token
+    user,
+    token,
   });
 };
 
-const sendEmailWithOtp = async (user, otp ,res ,email) => {
+const sendEmailWithOtp = async (user, otp, res, email) => {
   try {
     await sendEmail({
-      email :email || user.email,
+      email: email || user.email,
       subject: 'Email Confirm',
       message: `That's a 5 minutes valid otp ${otp} `,
     });
-  
+
     res.status(200).json({
       status: 'success',
-      message: 'An email will be send to complete the steps'
+      message: 'An email will be send to complete the steps',
     });
-  } 
-  catch (err) {
+  } catch (err) {
     user.otpExpires = undefined;
     user.otp = undefined;
     await user.save({ validateBeforeSave: false });
     res.status(500).json({
       status: 'fail',
-      message:
-            'There is an error while sending the email, pleas try again!',
+      message: 'There is an error while sending the email, pleas try again!',
     });
   }
 };
 
-exports.signup = catchAsync(async (req, res ,next) => {
-  
+exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await userModel.create({
     name: req.body.name,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     email: req.body.email,
-    createdAt  : Date.now()
+    createdAt: Date.now(),
   });
   newUser.authenticated = false;
 
@@ -58,7 +56,7 @@ exports.signup = catchAsync(async (req, res ,next) => {
 
   try {
     await sendEmail({
-      email:newUser.email,
+      email: newUser.email,
       subject: 'Email Confirm',
       message: `That's a 5 minutes valid otp ${otp} to Confirm your Email`,
     });
@@ -71,25 +69,23 @@ exports.signup = catchAsync(async (req, res ,next) => {
     await userModel.findByIdAndDelete(newUser._id);
     res.status(500).json({
       status: 'fail',
-      message:
-          'There is an error while sending the email, pleas signup again!',
+      message: 'There is an error while sending the email, pleas signup again!',
     });
   }
 });
 
 exports.confirmSignup = catchAsync(async (req, res, next) => {
-
   const hashedOtp = hashOtp(req.body.otp);
 
   const user = await userModel.findOne({
     otp: hashedOtp,
-    otpExpires: { $gt:Date.now() },
-    authenticated :false
+    otpExpires: { $gt: Date.now() },
+    authenticated: false,
   });
   if (!user) {
     return res.status(401).json({
-      status :'fail' ,
-      'message' :'Otp is invalide or has been expired!'
+      status: 'fail',
+      message: 'Otp is invalide or has been expired!',
     });
   }
 
@@ -101,28 +97,27 @@ exports.confirmSignup = catchAsync(async (req, res, next) => {
   createSendToken(res, 201, user);
 });
 
-exports.resendOtp = catchAsync(async (req , res , next) => {
- 
-  const user = await userModel.findOne({email :req.body.email});
+exports.resendOtp = catchAsync(async (req, res, next) => {
+  const user = await userModel.findOne({ email: req.body.email });
   if (!user) {
     return res.status(404).json({
-      status :'fail' ,
-      'message' :'There is no user with that email address'
+      status: 'fail',
+      message: 'There is no user with that email address',
     });
   }
   if (user.authenticated) {
     return res.status(400).json({
-      status :'fail' , 
-      message :'Your account is already authenticated'
+      status: 'fail',
+      message: 'Your account is already authenticated',
     });
   }
   const confirmOtp = user.createOtp();
-  await user.save({validateBeforeSave:false});
+  await user.save({ validateBeforeSave: false });
 
-  sendEmailWithOtp(user ,confirmOtp , res);
+  sendEmailWithOtp(user, confirmOtp, res);
 });
 
-exports.login = catchAsync(async (req, res ,next) => {
+exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
@@ -153,7 +148,7 @@ exports.login = catchAsync(async (req, res ,next) => {
       message: 'Your account is not verified . Please verify your account',
     });
   }
-  if (!await user.correctPassword(password, user.password)) {
+  if (!(await user.correctPassword(password, user.password))) {
     return res.status(404).json({
       status: 'fail',
       message: 'The password is incorrect',
@@ -163,14 +158,16 @@ exports.login = catchAsync(async (req, res ,next) => {
 });
 
 exports.isLogin = catchAsync(async (req, res, next) => {
-
-  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer')) {
+  if (
+    !req.headers.authorization ||
+    !req.headers.authorization.startsWith('Bearer')
+  ) {
     return res.status(401).json({
       status: 'fail',
       message: 'You must be logged in to access this page',
     });
   }
-  
+
   const token = req.headers.authorization.split(' ')[1];
   const decode = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
   const user = await userModel.findById(decode.id);
@@ -192,8 +189,16 @@ exports.isLogin = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.updateUser = catchAsync(async (req, res, next) => {
+exports.isAdmin = catchAsync(async (req, res, next) => {
+  req.user.admin = true; // FIXME:
+  if (req.user?.admin === true) {
+    next();
+  }
 
+  return next(new AppError('That is not an admin user', 404));
+});
+
+exports.updateUser = catchAsync(async (req, res, next) => {
   if (req.body.email || req.body.password) {
     return res.status(401).json({
       status: 'fail',
@@ -215,10 +220,11 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.forgetPassword = async (req, res, next) => {
-  
-  const user = await userModel.findOne({ email: req.body.email , authenticated :true});
+  const user = await userModel.findOne({
+    email: req.body.email,
+    authenticated: true,
+  });
   if (!user) {
     return res.status(404).json({
       status: 'fail',
@@ -227,12 +233,10 @@ exports.forgetPassword = async (req, res, next) => {
   }
   const resetOtp = user.createOtp();
   await user.save({ validateBeforeSave: false });
-  sendEmailWithOtp(user ,resetOtp , res);
-
+  sendEmailWithOtp(user, resetOtp, res);
 };
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-  
   const hashedOtp = hashOtp(req.body.otp);
 
   const user = await userModel.findOne({
@@ -253,7 +257,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   if (user.password && user.password === user.passwordConfirm) {
     user.otp = undefined;
     user.otpExpires = undefined;
-    await user.save({validateBeforeSave :false});
+    await user.save({ validateBeforeSave: false });
   } else {
     return res.status(400).json({
       status: 'fail',
@@ -264,17 +268,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.changeEmail = catchAsync(async (req, res, next) => {
-
   const user = await userModel.findById(req.user._id);
   const resetOtp = user.createOtp();
   await user.save({ validateBeforeSave: false });
-  sendEmailWithOtp(user ,resetOtp , res , req.body.newEmail);
-
+  sendEmailWithOtp(user, resetOtp, res, req.body.newEmail);
 });
 
-
 exports.resetEmail = catchAsync(async (req, res, next) => {
-
   const hashedOtp = hashOtp(req.body.otp);
   const user = await userModel.findOne({
     otp: hashedOtp,
@@ -294,19 +294,16 @@ exports.resetEmail = catchAsync(async (req, res, next) => {
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save({ validateBeforeSave: false });
-  } 
-  else {
+  } else {
     return res.status(400).json({
       status: 'fail',
       message: 'Provide a valid email!',
     });
-  } 
+  }
   createSendToken(res, 200, user);
 });
 
-
 exports.updatePassword = catchAsync(async (req, res, next) => {
-
   const user = await userModel.findById(req.user._id).select('+password');
   if (
     !user ||
