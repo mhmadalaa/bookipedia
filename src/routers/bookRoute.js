@@ -11,16 +11,16 @@ router.get(
   bookController.displayBook,
 );
 
-router.get('/titles', authController.isLogin, bookController.getBooksTitles);
+router.get('/cover-images' ,bookController.getCoverImages);
 
-// router.get('/cover-images', bookController.getCoverImages);
+router.get('/titles', bookController.getBooksTitles);
 
-// TODO: admin auth
 
 router
   .route('/')
-  .get(authController.isLogin, bookController.getAllBooks)
+  .get(bookController.getAllBooks)
   .post(
+    authController.isLogin,
     bookController.configMulter,
     pdfService.uploadFile,
     bookController.uploadCoverImage,
@@ -29,9 +29,10 @@ router
 
 router
   .route('/:id')
-  .get(authController.isLogin, bookController.getCertainBook)
-  .patch(bookController.updateBook)
-  .delete(bookController.deleteBook);
+  .get(bookController.getCertainBook)
+  .patch(authController.isLogin,bookController.updateBook)
+  .delete(authController.isLogin,bookController.deleteBook);
+
 
 router
   .route('/:id/user')

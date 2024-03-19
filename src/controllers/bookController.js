@@ -229,3 +229,12 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
     booksList: user.books,
   });
 });
+
+exports.getCoverImages = catchAsync(async (req , res , next) => {
+  const coverImages = await BookModel.find({} ,{image_url :1});
+  res.status(200).json({
+    message :'Success' ,
+    length : coverImages.length ,
+    coverImages
+  });
+});
