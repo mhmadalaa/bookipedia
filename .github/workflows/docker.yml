@@ -1,0 +1,42 @@
+name: Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: |
+          echo VAR1=${{ secrets.DATABASE }} >> .env
+          echo VAR2=${{ secrets.OPENAI_API_KEY }} >> .env
+          echo VAR2=${{ secrets.EMAIL_HOST_DEV }} >> .env
+          echo VAR2=${{ secrets.EMAIL_PORT_DEV }} >> .env
+          echo VAR2=${{ secrets.EMAIL_USERNAME_DEV }} >> .env
+          echo VAR2=${{ secrets.EMAIL_PASSWORD_DEV }} >> .env
+          echo VAR2=${{ secrets.EMAIL_HOST_PROD }} >> .env
+          echo VAR2=${{ secrets.EMAIL_PORT_PROD }} >> .env
+          echo VAR2=${{ secrets.EMAIL_USERNAME_PROD }} >> .env
+          echo VAR2=${{ secrets.EMAIL_PASSWORD_PROD }} >> .env
+          echo VAR2=${{ secrets.SECRET_KEY }} >> .env
+          echo VAR2=${{ secrets.JWT_COOKIE_EXPIRES_IN }} >> .env
+          echo VAR2=${{ secrets.DEPLOYMENT_URL }} >> .env
+          echo VAR2=${{ secrets.DEPLOYMENT_KEY }} >> .env
+          # Add more variables as needed
+
+      - name: Run docker-compose
+        uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: "./docker-compose.yml"
+          down-flags: "--volumes"
+          services: |
+            bookipedia
+          env-file: .env
