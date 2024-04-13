@@ -8,7 +8,7 @@ cd ~/app
 rm -rf bookipedia
 
 # Clone the new repository
-git clone -b deploy https://github.com/mhmadalaa/bookipedia
+git clone https://github.com/mhmadalaa/bookipedia
 
 # copy .env file
 cp .env bookipedia/
