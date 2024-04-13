@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const { GridFSBucket, MongoClient } = require('mongodb');
+// const {bookipediaConnection} = require('./../db/connections');
 const catchAsync = require('../utils/catchAsync');
-const fs = require('fs');
+
 const db = mongoose.connection;
 const bucket = new GridFSBucket(db);
-
+// const bucket = new GridFSBucket(bookipediaConnection);
 
 const url = process.env.DATABASE;
 const client = new MongoClient(url);
@@ -13,33 +14,21 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
   if (!req.files || !req.files.file || req.files.file.length === 0) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  fs.readFile(req.files.file[0].path ,(err , data) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error during convert the file to buffer' });
-    }
-    else if (data) {
-      const fileBuffer = data; 
-      const filename = req.files.file[0].originalname;
-      
-      const uploadStream = bucket.openUploadStream(filename);
-      const id = uploadStream.id;
-      req.fileId = id;
 
-      uploadStream.end(fileBuffer); 
+  const fileBuffer = req.files.file[0].buffer; // Access the file buffer
+  const filename = req.files.file[0].originalname;
+  const uploadStream = bucket.openUploadStream(filename);
+  const id = uploadStream.id;
+  req.fileId = id;
 
-      uploadStream.on('finish', () => {
-        fs.unlink(req.files.file[0].path ,(err) => {
-          if (err) {
-            console.error(err);
-          }
-        }); 
-        next();
-      });
+  uploadStream.end(fileBuffer); // Write the file buffer to the stream
 
-      uploadStream.on('error', async (error) => {
-        res.status(500).json({ error: 'Error uploading file to GridFS' });
-      });
-    }
+  uploadStream.on('finish', () => {
+    next();
+  });
+
+  uploadStream.on('error', async (error) => {
+    res.status(500).json({ error: 'Error uploading file to GridFS' });
   });
 });
 
@@ -71,5 +60,4 @@ exports.deleteFile = catchAsync(async (req, res, next) => {
 
   await files.deleteOne({ _id: fileId });
   await chuncks.deleteMany({ files_id: fileId });
-
 });
