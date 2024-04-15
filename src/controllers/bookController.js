@@ -5,6 +5,7 @@ const pdfService = require('../services/pdfService');
 const {uploadImage , deleteImage} = require('../services/imageService');
 const BookModel = require('../models/BookModel');
 const User = require('../models/userModel');
+const path = require('path');
 
 const multer = require('multer');
 
@@ -79,12 +80,13 @@ exports.createBook = async (req, res, next) => {
 
 exports.uploadCoverImage = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
-  const {public_id , url } = await uploadImage(req.files.coverImage[0].path);
+  const imagePath = path.resolve(req.files.coverImage[0].path);
+  const {public_id , url } = await uploadImage(imagePath);
 
   req.public_id = public_id;
   req.url = url;
 
-  fs.unlink(req.files.coverImage[0].path ,
+  fs.unlink(imagePath ,
     (err) => {
       if (err) {
         console.error(err);
