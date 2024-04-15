@@ -13,10 +13,10 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) 
   {
     if (file.mimetype.startsWith('image/')) {
-      cb(null, './src/public/img/covers');
+      cb(null,path.resolve('./src/public/img/covers'));
     }
     else if (file.mimetype === 'application/pdf') {
-      cb(null, './src/public/books');
+      cb(null,path.resolve('./src/public/books'));
     }
   },
   filename: function (req, file, cb) {
