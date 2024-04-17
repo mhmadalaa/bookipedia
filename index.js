@@ -1,6 +1,5 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-// const { bookipediaConnection } = require('./src/db/connections');
 const app = require('./src/app');
 require('./src/utils/scheduleTasks');
 
