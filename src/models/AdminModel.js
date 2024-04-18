@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const otpGenerator = require('otp-generator');
+
+const hashOtp = require('../utils/hashOtp');
 
 const AdminSchema = new mongoose.Schema({
   superadmin: {
@@ -20,11 +23,27 @@ const AdminSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  loginOtp: { type: String },
+  loginOtpExpires: { type: Date },
   createdAt: {
     type: Date,
     required: true,
   },
 });
+
+AdminSchema.methods.createOtp = function () {
+  const Otp = otpGenerator.generate(6, {
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets: false,
+    specialChars: false,
+  });
+
+  this.loginOtp = hashOtp(Otp);
+
+  this.loginOtpExpires = Date.now() + 5 * 60 * 1000;
+
+  return Otp;
+};
 
 const Admin = mongoose.model('Admin', AdminSchema);
 
