@@ -40,7 +40,7 @@ AdminSchema.methods.createOtp = function () {
 
   this.loginOtp = hashOtp(Otp);
 
-  this.loginOtpExpires = Date.now() + 5 * 60 * 1000;
+  this.loginOtpExpires = Date.now() + 24 * 60 * 60 * 1000;
 
   return Otp;
 };
