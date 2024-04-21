@@ -50,6 +50,15 @@ const sendEmailWithOtp = async (user, otp, res, email) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  // check if this email is in admins list
+  const admin = await Admin.findOne({ admin: req.body.email });
+
+  if (admin !== null) {
+    req.admin = true;
+  } else {
+    req.admin = false;
+  }
+
   const newUser = await userModel.create({
     name: req.body.name,
     password: req.body.password,
@@ -212,7 +221,8 @@ exports.isLogin = catchAsync(async (req, res, next) => {
 });
 
 exports.isAdmin = catchAsync(async (req, res, next) => {
-  if (req?.user?.admin === true) {
+  const admin = await Admin.findOne({ admin: req.user.email, active: true });
+  if (admin) {
     next();
   } else {
     next(new AppError('That is not an admin user', 404));

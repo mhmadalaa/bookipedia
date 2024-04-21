@@ -1,10 +1,9 @@
 const authController = require('../controllers/authControllers');
-const adminController = require('./../controllers/adminController');
 const express = require('express');
 
 const router = express.Router();
 
-router.post('/signup', adminController.isAdminEmail, authController.signup);
+router.post('/signup', authController.signup);
 router.post('/confirm-your-account', authController.confirmSignup);
 router.post('/resend-verification-email', authController.resendOtp);
 router.post('/login', authController.login);

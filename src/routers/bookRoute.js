@@ -15,7 +15,7 @@ router.get('/titles', authController.isLogin, bookController.getBooksTitles);
 
 // router.get('/cover-images', bookController.getCoverImages);
 
-// note: admin authentication is added but disable for development 
+// note: admin authentication is added but disabled for development
 //       process to make it easy to test the other routes
 
 router.route('/').get(authController.isLogin, bookController.getAllBooks).post(

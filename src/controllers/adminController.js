@@ -13,18 +13,6 @@ const AppError = require('./../utils/appError');
 const User = require('./../models/userModel');
 const Admin = require('./../models/AdminModel');
 
-exports.isAdminEmail = catchAsync(async (req, res, next) => {
-  const admin = await Admin.findOne({ admin: req.body.email });
-
-  if (admin !== null) {
-    req.admin = true;
-  } else {
-    req.admin = false;
-  }
-
-  next();
-});
-
 exports.addAdmin = catchAsync(async (req, res, next) => {
   const admin = await Admin.create({
     superadmin: req.user._id,
