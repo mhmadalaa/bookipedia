@@ -1,15 +1,4 @@
-/*
-isAdmin?
-then you can add another admin 
-or remove the admin you added 
-
-signup as admin
-login as admin
-
-*/
-
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
 const User = require('./../models/userModel');
 const Admin = require('./../models/AdminModel');
 
@@ -30,8 +19,29 @@ exports.addAdmin = catchAsync(async (req, res, next) => {
 });
 
 exports.removeAdmin = catchAsync(async (req, res, next) => {
-  return res.status(200).json({
+  const admin = await Admin.findOneAndDelete({ admin: req.body.admin });
+
+  if (!admin) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'the one you need to remove is not an admin!',
+    });
+  }
+
+  let user;
+  if (admin.active === true) {
+    user = await User.findOneAndUpdate(
+      { email: req.body.admin },
+      { admin: false },
+      { new: true },
+    );
+  }
+
+  return res.status(203).json({
     status: 'sucess',
-    message: 'from remove admin func',
+    message: 'admin authority deleted from the user',
+    data: {
+      user,
+    },
   });
 });
