@@ -168,10 +168,17 @@ exports.login = catchAsync(async (req, res, next) => {
       message: 'The password is incorrect',
     });
   }
+  if (user.admin === true) {
+    return res.status(200).json({
+      status: 'success',
+      message:
+        'Oh, your an admin! please confirm your login with daily admins otp code email.',
+    });
+  }
+
   createSendToken(res, 200, user);
 });
 
-// FIXME: when admin login as a normal user
 exports.isLogin = catchAsync(async (req, res, next) => {
   if (
     !req.headers.authorization ||
@@ -205,12 +212,31 @@ exports.isLogin = catchAsync(async (req, res, next) => {
 });
 
 exports.isAdmin = catchAsync(async (req, res, next) => {
-  req.user.admin = true; // FIXME:
   if (req?.user?.admin === true) {
     next();
   } else {
     next(new AppError('That is not an admin user', 404));
   }
+});
+
+exports.confirmAdminLogin = catchAsync(async (req, res, next) => {
+  const hashedOtp = hashOtp(req.body.otp);
+
+  const admin = await Admin.findOne({
+    loginOtp: hashedOtp,
+    loginOtpExpires: { $gt: Date.now() },
+    admin: req.body.email,
+  });
+  if (!admin) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'Otp is invalide or has been expired!',
+    });
+  }
+
+  const user = await userModel.findOne({ email: req.body.email });
+
+  createSendToken(res, 201, user);
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
