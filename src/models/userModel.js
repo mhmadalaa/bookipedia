@@ -53,6 +53,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  admin: {
+    type: Boolean,
+  },
   books: [
     {
       type: mongoose.Schema.ObjectId,
