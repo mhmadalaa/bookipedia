@@ -41,9 +41,9 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
-  otp :String ,
-  otpExpires :Date ,
-  createdAt :Date ,
+  otp: String,
+  otpExpires: Date,
+  createdAt: Date,
   active: {
     type: Boolean,
     default: true,
@@ -52,6 +52,9 @@ const userSchema = new mongoose.Schema({
   authenticated: {
     type: Boolean,
     default: false,
+  },
+  admin: {
+    type: Boolean,
   },
   books: [
     {

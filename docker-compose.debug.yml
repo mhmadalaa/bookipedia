@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   bookipedia:
+    container_name: bookipedia-debug-container
     image: bookipedia
     build:
       context: .
@@ -11,4 +12,5 @@ services:
     ports:
       - 3000:3000
       - 9229:9229
-    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    env_file:
+      - .env
