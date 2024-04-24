@@ -7,6 +7,7 @@ router.post('/signup' ,authController.signup);
 router.post('/confirm-your-account' , authController.confirmSignup);
 router.post('/resend-verification-email' ,authController.resendOtp);
 router.post('/login' , authController.login);
+router.post('/confirm-admin-login', authController.confirmAdminLogin);
 
 
 router.post('/forget-password' , authController.forgetPassword);

@@ -5,10 +5,21 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const catchAsync = require('./../utils/catchAsync');
 
+const AppError = require('./../utils/appError');
+const Admin = require('../models/AdminModel');
+
 
 const createSendToken = (res, status, user) => {
-  const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-    expiresIn: process.env.EXPIRE_IN});
+  let token;
+  if (user.admin === true) {
+    token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      expiresIn: process.env.ADMIN_JWT_EXPIRE_IN,
+    });
+  } else {
+    token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      expiresIn: process.env.EXPIRE_IN,
+    });
+  }
 
   res.status(status).json({
     status: 'success',
@@ -43,13 +54,23 @@ const sendEmailWithOtp = async (user, otp ,res ,email) => {
 };
 
 exports.signup = catchAsync(async (req, res ,next) => {
+
+  // check if this email is in admins list
+  const admin = await Admin.findOne({ admin: req.body.email });
+
+  if (admin !== null) {
+    req.admin = true;
+  } else {
+    req.admin = false;
+  }
   
   const newUser = await userModel.create({
     name: req.body.name,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     email: req.body.email,
-    createdAt  : Date.now()
+    createdAt  : Date.now(),
+    admin: req.admin,
   });
   newUser.authenticated = false;
 
@@ -91,6 +112,11 @@ exports.confirmSignup = catchAsync(async (req, res, next) => {
       status :'fail' ,
       'message' :'Otp is invalide or has been expired!'
     });
+  }
+
+  // activate the admin in admin list
+  if (user.admin === true) {
+    await Admin.findOneAndUpdate({ admin: user.email }, { active: true });
   }
 
   user.authenticated = true;
@@ -159,6 +185,14 @@ exports.login = catchAsync(async (req, res ,next) => {
       message: 'The password is incorrect',
     });
   }
+  if (user.admin === true) {
+    return res.status(200).json({
+      status: 'success',
+      message:
+        'Oh, your an admin! please confirm your login with daily admins otp code email.',
+    });
+  }
+
   createSendToken(res, 200, user);
 });
 
@@ -215,6 +249,34 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.isAdmin = catchAsync(async (req, res, next) => {
+  const admin = await Admin.findOne({ admin: req.user.email, active: true });
+  if (admin) {
+    next();
+  } else {
+    next(new AppError('That is not an admin user', 404));
+  }
+});
+
+exports.confirmAdminLogin = catchAsync(async (req, res, next) => {
+  const hashedOtp = hashOtp(req.body.otp);
+
+  const admin = await Admin.findOne({
+    loginOtp: hashedOtp,
+    loginOtpExpires: { $gt: Date.now() },
+    admin: req.body.email,
+  });
+  if (!admin) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'Otp is invalide or has been expired!',
+    });
+  }
+
+  const user = await userModel.findOne({ email: req.body.email });
+
+  createSendToken(res, 201, user);
+});
 
 exports.forgetPassword = async (req, res, next) => {
   
