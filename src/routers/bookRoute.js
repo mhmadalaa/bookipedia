@@ -11,36 +11,28 @@ router.get(
   bookController.displayBook,
 );
 
-router.get('/titles', authController.isLogin, bookController.getBooksTitles);
+router.get('/cover-images' ,bookController.getCoverImages);
 
-// router.get('/cover-images', bookController.getCoverImages);
+router.get('/titles', bookController.getBooksTitles);
 
-// note: admin authentication is added but disabled for development
-//       process to make it easy to test the other routes
 
-router.route('/').get(authController.isLogin, bookController.getAllBooks).post(
-  authController.isLogin,
-  // authController.isAdmin,
-  bookController.configMulter,
-  pdfService.uploadFile,
-  bookController.createBook,
-  bookController.uploadCoverImage,
-);
+router
+  .route('/')
+  .get(bookController.getAllBooks)
+  .post(
+    authController.isLogin,
+    bookController.configMulter,
+    pdfService.uploadFile,
+    bookController.uploadCoverImage,
+    bookController.createBook,
+  );
 
 router
   .route('/:id')
-  .get(authController.isLogin, bookController.getCertainBook)
-  .patch(
-    authController.isLogin,
-    // authController.isAdmin,
-    bookController.updateBook,
-  )
-  .delete(
-    authController.isLogin,
-    // authController.isAdmin,
-    bookController.deleteBook,
-    bookController.deleteCoverImage,
-  );
+  .get(bookController.getCertainBook)
+  .patch(authController.isLogin,bookController.updateBook)
+  .delete(authController.isLogin,bookController.deleteBook);
+
 
 router
   .route('/:id/user')
