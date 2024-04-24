@@ -7,8 +7,9 @@ config.env
 node_modules
 
 # MANAGE WORKFLOW
-makefile
+# makefile
 todo
+todo.txt
 
 # TEMPORARY CODE
 trashcode
