@@ -1,10 +1,20 @@
 const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
 const pdfService = require('./../services/pdfService');
-
 const multer = require('multer');
+const path = require('path');
 
-const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) 
+  {
+    cb(null,path.resolve('./src/public/documents'));
+  },
+  filename: function (req, file, cb) {
+    const uniquename = `${Date.now()}_${file.originalname}`;
+    cb(null, uniquename);
+  }
+
+});
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype === 'application/pdf') {

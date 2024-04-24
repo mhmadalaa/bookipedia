@@ -5,10 +5,31 @@ const AppError = require('../utils/appError');
 const pdfService = require('../services/pdfService');
 const BookModel = require('../models/BookModel');
 const User = require('../models/userModel');
+const path = require('path');
 
 const multer = require('multer');
 
-const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) 
+  {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null,path.resolve('./src/public/img/covers'));
+    }
+    else if (file.mimetype === 'application/pdf') {
+      cb(null,path.resolve('./src/public/books'));
+    }
+  },
+  filename: function (req, file, cb) {
+    if (file.mimetype.startsWith('image/')) {
+      const uniquename = `${Date.now()}_${file.originalname}`;
+      cb(null, uniquename);
+    }
+    else if (file.mimetype === 'application/pdf') {
+      const uniquename = `${Date.now()}_${file.originalname}`;
+      cb(null, uniquename);
+    }
+  }
+});
 
 const multerFilter = (req, file, cb) => {
   if (
@@ -54,20 +75,21 @@ exports.createBook = async (req, res, next) => {
 
 exports.uploadCoverImage = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
+  const imagePath = path.resolve(req.files.coverImage[0].path);
+  const {public_id , url } = await uploadImage(imagePath);
 
-  const fileBuffer = req.files.coverImage[0].buffer; // Access the file buffer
-  const filename = `${req.book._id}.jpeg`;
+  req.public_id = public_id;
+  req.url = url;
 
-  await sharp(fileBuffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`./src/public/img/covers/${filename}`);
+  fs.unlink(imagePath ,
+    (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
 
-  res.status(201).json({
-    message: 'Created book successfully',
-    book: req.book,
-  });
+  next();
+
 });
 
 exports.getAllBooks = catchAsync(async (req, res, next) => {
