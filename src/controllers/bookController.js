@@ -1,8 +1,8 @@
-const sharp = require('sharp');
 const fs = require('fs');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const pdfService = require('../services/pdfService');
+const { uploadImage, deleteImage } = require('../services/imageService');
 const BookModel = require('../models/BookModel');
 const User = require('../models/userModel');
 const path = require('path');
@@ -10,25 +10,22 @@ const path = require('path');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) 
-  {
+  destination: function (req, file, cb) {
     if (file.mimetype.startsWith('image/')) {
-      cb(null,path.resolve('./src/public/img/covers'));
-    }
-    else if (file.mimetype === 'application/pdf') {
-      cb(null,path.resolve('./src/public/books'));
+      cb(null, path.resolve('./src/public/img/covers'));
+    } else if (file.mimetype === 'application/pdf') {
+      cb(null, path.resolve('./src/public/books'));
     }
   },
   filename: function (req, file, cb) {
     if (file.mimetype.startsWith('image/')) {
       const uniquename = `${Date.now()}_${file.originalname}`;
       cb(null, uniquename);
-    }
-    else if (file.mimetype === 'application/pdf') {
+    } else if (file.mimetype === 'application/pdf') {
       const uniquename = `${Date.now()}_${file.originalname}`;
       cb(null, uniquename);
     }
-  }
+  },
 });
 
 const multerFilter = (req, file, cb) => {
@@ -76,20 +73,18 @@ exports.createBook = async (req, res, next) => {
 exports.uploadCoverImage = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
   const imagePath = path.resolve(req.files.coverImage[0].path);
-  const {public_id , url } = await uploadImage(imagePath);
+  const { public_id, url } = await uploadImage(imagePath);
 
   req.public_id = public_id;
   req.url = url;
 
-  fs.unlink(imagePath ,
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
+  fs.unlink(imagePath, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
 
   next();
-
 });
 
 exports.getAllBooks = catchAsync(async (req, res, next) => {
