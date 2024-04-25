@@ -1,6 +1,6 @@
 const catchAsync = require('./../utils/catchAsync');
 const User = require('./../models/userModel');
-const Admin = require('./../models/AdminModel');
+const Admin = require('./../models/adminModel');
 
 exports.addAdmin = catchAsync(async (req, res, next) => {
   const admin = await Admin.create({
