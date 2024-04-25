@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 
-const AdminModel = require('../models/AdminModel');
+const AdminModel = require('../models/adminModel');
 const sendEmail = require('../utils/email');
 
 async function sendingDailyAdminEmails() {

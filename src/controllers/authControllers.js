@@ -6,7 +6,7 @@ const { promisify } = require('util');
 const catchAsync = require('./../utils/catchAsync');
 
 const AppError = require('./../utils/appError');
-const Admin = require('../models/AdminModel');
+const Admin = require('../models/adminModel');
 
 
 const createSendToken = (res, status, user) => {
