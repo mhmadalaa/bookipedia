@@ -25,7 +25,10 @@ router
 
 router
   .route('/tts')
-  .get(authController.isLogin, textToSpeechController.textToSpeech);
+  .get(
+    authController.isLogin, 
+    textToSpeechController.textToSpeech,
+  );
 
 /*
 TODO: 
