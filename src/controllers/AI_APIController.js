@@ -5,13 +5,13 @@ const BACKEND = process.env.BACKEND;
 
 exports.addFileToAI = async (req, res, next) => {
   const file_id = req.fileId;
-  const ocr = req.fileType === 'document';
+  const lib_doc = req.fileType === 'book';
 
   const url = `${BACKEND}/ai-api/file`;
 
   try {
     const response = await axios.post(
-      `${AI_API}/add_documnt/${file_id}?url=${url}/${file_id}`,
+      `${AI_API}/add_document/${file_id}?url=${url}/${file_id}?lib_doc=${lib_doc}`,
     );
 
     return { message: 'success', data: response.data };

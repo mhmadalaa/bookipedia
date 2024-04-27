@@ -31,7 +31,6 @@ const upload = multer({
 exports.configMulter = upload.fields([{ name: 'file', maxCount: 1 }]);
 
 exports.createDocument = catchAsync(async (req, res, next) => {
-  req.fileType = 'document';
   const document = await DocumentModel.create({
     title: req.files.file[0].originalname,
     original_id: req.fileId,
@@ -40,9 +39,15 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     createdAt: Date.now(),
   });
 
+  req.fileType = 'document';
+
   const applyAI = await AI_APIController.addFileToAI(req);
   if (applyAI.message === 'error') {
-    console.error('✗ There is an error while sending request to ai-api');
+    console.error(
+      '✗ There is an error while sending process document file request to ai-api',
+    );
+  } else if (applyAI.message === 'success') {
+    console.log('AI start processing the uploaded document...');
   }
 
   res.status(202).json({
