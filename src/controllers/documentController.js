@@ -1,19 +1,18 @@
 const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
 const pdfService = require('./../services/pdfService');
+const AI_APIController = require('./../controllers/AI_APIController');
 const multer = require('multer');
 const path = require('path');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) 
-  {
-    cb(null,path.resolve('./src/public/documents'));
+  destination: function (req, file, cb) {
+    cb(null, path.resolve('./src/public/documents'));
   },
   filename: function (req, file, cb) {
     const uniquename = `${Date.now()}_${file.originalname}`;
     cb(null, uniquename);
-  }
-
+  },
 });
 
 const multerFilter = (req, file, cb) => {
@@ -39,6 +38,9 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     user: req.user._id,
     createdAt: Date.now(),
   });
+
+  req.fileType = 'document';
+  AI_APIController.addFileToAI(req);
 
   res.status(202).json({
     message: 'sucess',

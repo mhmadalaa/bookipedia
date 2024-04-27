@@ -79,7 +79,6 @@ exports.askQuestion = catchAsync(async (req, res) => {
       'Nikola Tesla was a Serbian-American inventor, electrical engineer, and futurist. He is known for his contributions.',
     chat: chat,
     doc_ids: [file_id],
-    ocr: ocr,
   };
 
   const chat_id = '657ca6946a4b116e10326793'; // make chat model contains chat summary
@@ -93,7 +92,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
     })
     .then((response) => {
       // console.log('Response:', response.data);
-
+      // FIXME: ID BOOK OR DOCUMENT
       // await Question.create(); // save the question
 
       res.status(200).json({
