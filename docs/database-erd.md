@@ -1,5 +1,6 @@
 # Database design for the application
 
-![erd](https://github.com/mhmadalaa/bookipedia/assets/68995755/6a6a8f32-9edd-47c3-bdb3-32049a87b276)
+![dbERD](https://github.com/mhmadalaa/bookipedia/assets/68995755/09b09b11-dc60-4243-97b8-a5fb6918e66c)
+
 
 The website link to edit https://dbdiagram.io/d/Copy-of-api_14_c-65b439d8ac844320aed1e4f7
