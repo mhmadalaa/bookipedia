@@ -33,8 +33,7 @@ exports.configMulter = upload.fields([{ name: 'file', maxCount: 1 }]);
 exports.createDocument = catchAsync(async (req, res, next) => {
   const document = await DocumentModel.create({
     title: req.files.file[0].originalname,
-    original_id: req.fileId,
-    ocr_id: req.fileId,
+    file_id: req.fileId,
     user: req.user._id,
     createdAt: Date.now(),
   });
@@ -68,7 +67,7 @@ exports.displayDocument = catchAsync(async (req, res, next) => {
     });
   }
 
-  req.fileId = document.ocr_id;
+  req.fileId = document.file_id;
   pdfService.displayFile(req, res, next);
 });
 
@@ -84,7 +83,7 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
     });
   }
 
-  req.fileId = document.original_id;
+  req.fileId = document.file_id;
   pdfService.deleteFile(req, res, next);
   res.status(204).json({
     message: 'document deleted successfully',
