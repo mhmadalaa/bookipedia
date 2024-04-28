@@ -1,19 +1,18 @@
 const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
 const pdfService = require('./../services/pdfService');
+const AI_APIController = require('./../controllers/AI_APIController');
 const multer = require('multer');
 const path = require('path');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) 
-  {
-    cb(null,path.resolve('./src/public/documents'));
+  destination: function (req, file, cb) {
+    cb(null, path.resolve('./src/public/documents'));
   },
   filename: function (req, file, cb) {
     const uniquename = `${Date.now()}_${file.originalname}`;
     cb(null, uniquename);
-  }
-
+  },
 });
 
 const multerFilter = (req, file, cb) => {
@@ -34,11 +33,21 @@ exports.configMulter = upload.fields([{ name: 'file', maxCount: 1 }]);
 exports.createDocument = catchAsync(async (req, res, next) => {
   const document = await DocumentModel.create({
     title: req.files.file[0].originalname,
-    original_id: req.fileId,
-    ocr_id: req.fileId,
+    file_id: req.fileId,
     user: req.user._id,
     createdAt: Date.now(),
   });
+
+  req.fileType = 'document';
+
+  const applyAI = await AI_APIController.addFileToAI(req);
+  if (applyAI.message === 'error') {
+    console.error(
+      '✗ There is an error while sending process document file request to ai-api',
+    );
+  } else if (applyAI.message === 'success') {
+    console.log('AI start processing the uploaded document...');
+  }
 
   res.status(202).json({
     message: 'sucess',
@@ -58,7 +67,7 @@ exports.displayDocument = catchAsync(async (req, res, next) => {
     });
   }
 
-  req.fileId = document.ocr_id;
+  req.fileId = document.file_id;
   pdfService.displayFile(req, res, next);
 });
 
@@ -74,7 +83,7 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
     });
   }
 
-  req.fileId = document.original_id;
+  req.fileId = document.file_id;
   pdfService.deleteFile(req, res, next);
   res.status(204).json({
     message: 'document deleted successfully',

@@ -2,33 +2,31 @@ const fs = require('fs');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const pdfService = require('../services/pdfService');
-const {uploadImage , deleteImage} = require('../services/imageService');
+const { uploadImage, deleteImage } = require('../services/imageService');
 const BookModel = require('../models/BookModel');
 const User = require('../models/userModel');
+const AI_APIController = require('./../controllers/AI_APIController');
 const path = require('path');
 
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) 
-  {
+  destination: function (req, file, cb) {
     if (file.mimetype.startsWith('image/')) {
-      cb(null,path.resolve('./src/public/img/covers'));
-    }
-    else if (file.mimetype === 'application/pdf') {
-      cb(null,path.resolve('./src/public/books'));
+      cb(null, path.resolve('./src/public/img/covers'));
+    } else if (file.mimetype === 'application/pdf') {
+      cb(null, path.resolve('./src/public/books'));
     }
   },
   filename: function (req, file, cb) {
     if (file.mimetype.startsWith('image/')) {
       const uniquename = `${Date.now()}_${file.originalname}`;
       cb(null, uniquename);
-    }
-    else if (file.mimetype === 'application/pdf') {
+    } else if (file.mimetype === 'application/pdf') {
       const uniquename = `${Date.now()}_${file.originalname}`;
       cb(null, uniquename);
     }
-  }
+  },
 });
 
 const multerFilter = (req, file, cb) => {
@@ -61,16 +59,26 @@ exports.createBook = async (req, res, next) => {
       category: req.body.category,
       file_id: req.fileId,
       description: req.body.description,
-      image_url : req.url ,
-      impage_name :req.public_id ,
+      image_url: req.url,
+      impage_name: req.public_id,
       createdAt: Date.now(),
     });
 
+    req.fileType = 'book';
+
+    const applyAI = await AI_APIController.addFileToAI(req);
+    if (applyAI.message === 'error') {
+      console.error(
+        '✗ There is an error while sending process book file request to ai-api',
+      );
+    } else if (applyAI.message === 'success') {
+      console.log('AI start processing the uploaded book...');
+    }
+
     res.status(201).json({
-      message :'Book was successfully created' ,
-      book
+      message: 'Book was successfully created',
+      book,
     });
-    
   } catch (err) {
     await pdfService.deleteFile(req, res, next);
     await deleteImage(req.public_id);
@@ -81,20 +89,18 @@ exports.createBook = async (req, res, next) => {
 exports.uploadCoverImage = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
   const imagePath = path.resolve(req.files.coverImage[0].path);
-  const {public_id , url } = await uploadImage(imagePath);
+  const { public_id, url } = await uploadImage(imagePath);
 
   req.public_id = public_id;
   req.url = url;
 
-  fs.unlink(imagePath ,
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
+  fs.unlink(imagePath, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
 
   next();
-
 });
 
 exports.getAllBooks = catchAsync(async (req, res, next) => {
@@ -169,7 +175,6 @@ exports.getBooksTitles = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.deleteBook = catchAsync(async (req, res, next) => {
   const book = await BookModel.findByIdAndDelete(req.params.id);
 
@@ -185,8 +190,8 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   await pdfService.deleteFile(req, res, next);
 
   res.status(204).json({
-    status :'success',
-    message :'Book deleted successfully'
+    status: 'success',
+    message: 'Book deleted successfully',
   });
 });
 
@@ -232,11 +237,11 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getCoverImages = catchAsync(async (req , res , next) => {
-  const coverImages = await BookModel.find({} ,{image_url :1});
+exports.getCoverImages = catchAsync(async (req, res, next) => {
+  const coverImages = await BookModel.find({}, { image_url: 1 });
   res.status(200).json({
-    message :'Success' ,
-    length : coverImages.length ,
-    coverImages
+    message: 'Success',
+    length: coverImages.length,
+    coverImages,
   });
 });

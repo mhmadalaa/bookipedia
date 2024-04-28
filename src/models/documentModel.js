@@ -5,10 +5,7 @@ const documentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  original_id: {
-    type: mongoose.Schema.ObjectId,
-  },
-  ocr_id: {
+  file_id: {
     type: mongoose.Schema.ObjectId,
   },
   user: {

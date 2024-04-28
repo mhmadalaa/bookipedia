@@ -9,6 +9,7 @@ const documentRouter = require('./routers/documentRoute');
 const noteRouter = require('./routers/noteRoute');
 const deployRouter = require('./routers/deployRoute');
 const adminRouter = require('./routers/adminRoute');
+const AI_APIRouter = require('./routers/AI_APIRoute');
 
 // BACKGROUND TASKS
 require('./background_tasks/nonVerifiedUsers');
@@ -26,7 +27,7 @@ app.use(
   express.urlencoded({
     extended: false,
   }),
-); 
+);
 
 // APP ROUTERS
 app.use('/document', documentRouter);
@@ -35,6 +36,7 @@ app.use('/auth', authRouter);
 app.use('/ai', aiRouter);
 app.use('/note', noteRouter);
 app.use('/admin', adminRouter);
+app.use('/ai-api', AI_APIRouter);
 
 // deployement router managed by github-workflow
 app.use('/deploy', deployRouter);
