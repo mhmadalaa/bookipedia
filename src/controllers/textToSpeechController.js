@@ -16,9 +16,8 @@ exports.textToSpeech = catchAsync(async (req, res) => {
       responseType: 'stream',
     })
     .then((response) => {
-      // Set the appropriate headers for the response
-      res.setHeader('Content-Type', 'audio/wav');
-      res.setHeader('Content-Disposition', 'attachment; filename=speech.wav');
+      // Set the appropriate headers for the raw audio response
+      res.setHeader('Content-Type', 'audio/raw');
 
       // Pipe the audio stream to the response
       response.data.pipe(res);
