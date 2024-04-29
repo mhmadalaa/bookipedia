@@ -94,11 +94,6 @@ exports.getAllDocuments = catchAsync(async (req, res, next) => {
   const user = req.user._id;
 
   const documents = await DocumentModel.find({ user: user });
-  if (documents.length === 0) {
-    return res.status(404).json({
-      message: 'No documents found',
-    });
-  }
 
   res.status(200).json({
     length: documents.length,

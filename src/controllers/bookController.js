@@ -105,11 +105,6 @@ exports.uploadCoverImage = catchAsync(async (req, res, next) => {
 
 exports.getAllBooks = catchAsync(async (req, res, next) => {
   const books = await BookModel.find();
-  if (books.length === 0) {
-    return res.status(404).json({
-      message: 'No books found',
-    });
-  }
 
   res.status(200).json({
     length: books.length,
