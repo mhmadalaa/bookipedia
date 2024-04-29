@@ -1,6 +1,7 @@
 const axios = require('axios');
 const pdfService = require('./../services/pdfService');
 const DocumentModel = require('../models/documentModel');
+const chatModel = require('../models/chatModel');
 const AI_API = process.env.AI_API;
 const BACKEND = process.env.BACKEND;
 
@@ -98,11 +99,27 @@ exports.OCRFile = async (req, res, next) => {
     search in Chat model with `req.params.chat_id`
     and update the content of chat_summary in it 
 */
-exports.updateChapterSummary = async (req, res, next) => {
+exports.updateChatSummary = async (req, res, next) => {
   try {
-    // log the operation
+    await chatModel.findByIdAndUpdate(req.params.id, {
+      chat_summary: req.body.chat_summary,
+    });
+
+    console.log('↪ chat summary update after an ai-question ✔');
+
+    res.status(202).json({
+      message: 'success, chat summary updated.',
+    });
   } catch (error) {
-    // log the operation
+    console.error(
+      '✗ There is an error while updating the chat summary!!\n',
+      error.message,
+    );
+
+    res.status(404).json({
+      message: 'fail',
+      error: error.message,
+    });
   }
 };
 

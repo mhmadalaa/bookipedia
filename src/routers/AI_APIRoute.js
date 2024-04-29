@@ -15,7 +15,7 @@ router
   );
 
 router
-  .route('/chapter-summary/:id')
-  .patch(AI_APIController.updateChapterSummary);
+  .route('/chat-summary/:id')
+  .patch(AI_APIController.updateChatSummary);
 
 module.exports = router;
