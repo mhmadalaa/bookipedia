@@ -190,6 +190,9 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   });
 });
 
+// FIXME: we have a bug right now with the way we create add the book to user
+//        when delete the book we supposed to loop over all user book-lists and delete it!,
+//        so we need to separate it and create a new model for user_books
 exports.addUserBook = catchAsync(async (req, res, next) => {
   const book = await BookModel.findById(req.params.id);
 
@@ -229,6 +232,22 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
   res.status(202).json({
     message: 'Book is removed successfully from the user',
     booksList: user.books,
+  });
+});
+
+exports.getUserBooks = catchAsync(async (req, res, next) => {
+  const bookList = req.user.books;
+
+  const userBooks = [];
+  for (const book_id of bookList) {
+    const book = await BookModel.findById(book_id);
+
+    if (book) userBooks.push(book);
+  }
+
+  res.status(200).json({
+    message: 'success, all user books',
+    userBooks,
   });
 });
 
