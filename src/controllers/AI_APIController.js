@@ -1,7 +1,35 @@
 const axios = require('axios');
 const pdfService = require('./../services/pdfService');
+const DocumentModel = require('../models/documentModel');
 const AI_API = process.env.AI_API;
 const BACKEND = process.env.BACKEND;
+
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.resolve('./src/public/documents'));
+  },
+  filename: function (req, file, cb) {
+    const uniquename = `${Date.now()}_${file.originalname}`;
+    cb(null, uniquename);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(new Error('Please upload only PDF files'), false);
+  }
+};
+const upload = multer({
+  storage,
+  fileFilter: multerFilter,
+});
+
+exports.configMulter = upload.fields([{ name: 'file', maxCount: 1 }]);
 
 exports.addFileToAI = async (req, res, next) => {
   const file_id = req.fileId;
@@ -30,6 +58,36 @@ exports.addFileToAI = async (req, res, next) => {
     then ⟹ search in `Document` model wehere `file_id = req.params.pdf_id`
     then ⟹ remove the old pdf and set the `file_id: req.update_fileId`
 */
+exports.OCRFile = async (req, res, next) => {
+  try {
+    // update the file id in document to the new file
+    // req.fileId is comming from pdfService upload function that applied as a middleware
+    const document = await DocumentModel.findOneAndUpdate(
+      { file_id: req.params.id },
+      { file_id: req.fileId },
+    );
+
+    // doucment object is not the updated one so we access the old file_id and delet it
+    req.fileId = document.file_id;
+    pdfService.deleteFile(req, res, next);
+
+    console.log('↪ File updated after ocr applied ✔');
+
+    res.status(202).json({
+      message: 'success, ocr-file updated.',
+    });
+  } catch (error) {
+    console.error(
+      '✗ There is an error while updating the ocr file!!\n',
+      error.message,
+    );
+
+    res.status(404).json({
+      message: 'fail',
+      error: error.message,
+    });
+  }
+};
 
 /*
   update chat_summary endpoint to accept the updated chat_summary with each new question
@@ -40,6 +98,13 @@ exports.addFileToAI = async (req, res, next) => {
     search in Chat model with `req.params.chat_id`
     and update the content of chat_summary in it 
 */
+exports.updateChapterSummary = async (req, res, next) => {
+  try {
+    // log the operation
+  } catch (error) {
+    // log the operation
+  }
+};
 
 // serve pdf files to ai-api
 exports.serveFile = async (req, res, next) => {
