@@ -19,11 +19,11 @@ const storage = multer.diskStorage({
 });
 
 const multerFilter = (req, file, cb) => {
-  if (file.mimetype === 'application/pdf') {
-    cb(null, true);
-  } else {
-    cb(new Error('Please upload only PDF files'), false);
-  }
+  // if (file.mimetype === 'application/pdf') {
+  //   cb(null, true);
+  // } else {
+  //   cb(new Error('Please upload only PDF files'), false);
+  // }
 };
 const upload = multer({
   storage,
