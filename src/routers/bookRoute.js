@@ -19,6 +19,13 @@ router.get(
 
 router.get('/titles', authController.isLogin, bookController.getBooksTitles);
 
+router.route('/user').get(authController.isLogin, bookController.getUserBooks);
+
+router
+  .route('/:id/user')
+  .put(authController.isLogin, bookController.addUserBook)
+  .delete(authController.isLogin, bookController.removeUserBook);
+
 router.route('/').get(authController.isLogin, bookController.getAllBooks).post(
   authController.isLogin,
   // authController.isAdmin,
@@ -41,10 +48,5 @@ router
     // authController.isAdmin,
     bookController.deleteBook,
   );
-
-router
-  .route('/:id/user')
-  .put(authController.isLogin, bookController.addUserBook)
-  .delete(authController.isLogin, bookController.removeUserBook);
 
 module.exports = router;
