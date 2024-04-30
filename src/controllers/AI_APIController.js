@@ -1,10 +1,10 @@
 const axios = require('axios');
-const mongoose = require('mongoose');
 const pdfService = require('./../services/pdfService');
 const DocumentModel = require('../models/documentModel');
 const chatModel = require('../models/chatModel');
 const FileType = require('../models/fileTypeModel');
 const BookModel = require('../models/BookModel');
+const FileTypeModel = require('../models/fileTypeModel');
 const AI_API = process.env.AI_API;
 const BACKEND = process.env.BACKEND;
 
@@ -68,6 +68,12 @@ exports.OCRFile = async (req, res, next) => {
     // req.fileId is comming from pdfService upload function that applied as a middleware
     const updatedFileId = req.fileId;
     const document = await DocumentModel.findOneAndUpdate(
+      { file_id: req.params.id },
+      { file_id: req.fileId },
+    );
+
+    // update the file_type model ⟹ to change the file_id refrence to the new one
+    await FileTypeModel.findOneAndUpdate(
       { file_id: req.params.id },
       { file_id: req.fileId },
     );
