@@ -35,7 +35,7 @@ const upload = multer({
 
 exports.configMulter = upload.fields([{ name: 'file', maxCount: 1 }]);
 
-exports.addFileToAI = async (req, res, next) => {
+exports.addFileToAI = async (req) => {
   const file_id = req.fileId;
   const lib_doc = req.fileType === 'book';
 
@@ -49,6 +49,23 @@ exports.addFileToAI = async (req, res, next) => {
     return { message: 'success', data: response.data };
   } catch (error) {
     return { message: 'error', error: error.message };
+  }
+};
+
+/*
+  when document/book being deleted we need to notify ai-api
+  so they easily remove these files embeddings
+*/
+exports.deleteAIFile = async (fileId) => {
+  try {
+    await axios.delete(`${AI_API}/delete_document/${fileId}`);
+
+    // delete the associated entities if the file deleted from our api
+    await FileTypeModel.deleteOne({ file_id: fileId });
+
+    console.log(`file ${fileId} deleted from AI successfully`);
+  } catch (error) {
+    console.error('✗ Error while sending delete file request to ai-api');
   }
 };
 

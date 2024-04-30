@@ -90,6 +90,7 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
   }
 
   req.fileId = document.file_id;
+  await AI_APIController.deleteAIFile(document.file_id);
   pdfService.deleteFile(req, res, next);
   res.status(204).json({
     message: 'document deleted successfully',

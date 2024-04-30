@@ -185,6 +185,7 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   }
 
   await deleteImage(book.impage_name);
+  await AI_APIController.deleteAIFile(book.file_id);
 
   req.fileId = book.file_id;
   await pdfService.deleteFile(req, res, next);
