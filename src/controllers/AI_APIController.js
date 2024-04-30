@@ -125,6 +125,43 @@ exports.updateChatSummary = async (req, res, next) => {
   }
 };
 
+/*
+  acknowledge that ai applied to specific file
+  ai-api will send an acknowledgemnt with the `file_id`
+
+  but the problem we have is that what is the file_id type?? doucment or book 
+  so, we will create a file_type database model 
+  that when a document or a book uploaded
+  it will add a new entitity the file_id is unique and the file type for each id
+  so, when ai-api send a file_id we easily can configure the file type 
+  and go to either the Document or Book model to mark that `aiApplied: true` 
+*/
+exports.aiApplied = async (req, res, next) => {
+  try {
+    const file_id = req.params.id;
+
+    // search in file_type model for file typed
+    // with the file_type search in either Book/Document model wich file_id: file_id
+    // update the aiApplied field to true
+
+    console.log(`↪ file ${file_id} is marked that ai applied to it ✔`);
+
+    res.status(202).json({
+      message: 'success, file is marked that ai applied to it',
+    });
+  } catch (error) {
+    console.error(
+      '✗ There is an error while mark if ai is applied to a file!I\n',
+      error.message,
+    );
+
+    res.status(404).json({
+      message: 'fail',
+      error: error.message,
+    });
+  }
+};
+
 // serve pdf files to ai-api
 exports.serveFile = async (req, res, next) => {
   req.fileId = req.params.id;

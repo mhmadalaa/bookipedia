@@ -18,4 +18,8 @@ router
   .route('/chat-summary/:id')
   .patch(AI_APIController.updateChatSummary);
 
+router
+  .route('/ai-applied/:id')
+  .patch(AI_APIController.aiApplied);
+
 module.exports = router;
