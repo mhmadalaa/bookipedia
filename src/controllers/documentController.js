@@ -2,6 +2,7 @@ const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
 const pdfService = require('./../services/pdfService');
 const AI_APIController = require('./../controllers/AI_APIController');
+const fileTypeController = require('./../controllers/fileTypeController');
 const multer = require('multer');
 const path = require('path');
 
@@ -38,7 +39,11 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     createdAt: Date.now(),
   });
 
+  // add `req.fileType` to identify to ai-api if the file may need to apply ocr or not
+  // and for fileTypeController that add a file type for each file_id
   req.fileType = 'document';
+  req.fileTypeId = document._id;
+  fileTypeController.addFileType(req);
 
   const applyAI = await AI_APIController.addFileToAI(req);
   if (applyAI.message === 'error') {

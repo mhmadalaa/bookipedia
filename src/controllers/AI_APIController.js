@@ -1,7 +1,10 @@
 const axios = require('axios');
+const mongoose = require('mongoose');
 const pdfService = require('./../services/pdfService');
 const DocumentModel = require('../models/documentModel');
 const chatModel = require('../models/chatModel');
+const FileType = require('../models/fileTypeModel');
+const BookModel = require('../models/BookModel');
 const AI_API = process.env.AI_API;
 const BACKEND = process.env.BACKEND;
 
@@ -134,15 +137,21 @@ exports.updateChatSummary = async (req, res, next) => {
   that when a document or a book uploaded
   it will add a new entitity the file_id is unique and the file type for each id
   so, when ai-api send a file_id we easily can configure the file type 
-  and go to either the Document or Book model to mark that `aiApplied: true` 
+  and go to either the Document or Book model to mark that `: true` 
 */
 exports.aiApplied = async (req, res, next) => {
   try {
     const file_id = req.params.id;
 
-    // search in file_type model for file typed
-    // with the file_type search in either Book/Document model wich file_id: file_id
-    // update the aiApplied field to true
+    const file = await FileType.findOne({ file_id: file_id });
+
+    if (file.file_type === 'book') {
+      await BookModel.findByIdAndUpdate(file.file_type_id, { aiApplied: true });
+    } else if (file.file_type === 'document') {
+      await DocumentModel.findByIdAndUpdate(file.file_type_id, {
+        aiApplied: true,
+      });
+    }
 
     console.log(`↪ file ${file_id} is marked that ai applied to it ✔`);
 
