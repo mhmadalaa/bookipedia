@@ -45,7 +45,7 @@ exports.addFileToAI = async (req, res, next) => {
 
     return { message: 'success', data: response.data };
   } catch (error) {
-    return { message: 'error' };
+    return { message: 'error', error: error.message };
   }
 };
 
@@ -63,6 +63,7 @@ exports.OCRFile = async (req, res, next) => {
   try {
     // update the file id in document to the new file
     // req.fileId is comming from pdfService upload function that applied as a middleware
+    const updatedFileId = req.fileId;
     const document = await DocumentModel.findOneAndUpdate(
       { file_id: req.params.id },
       { file_id: req.fileId },
@@ -76,6 +77,7 @@ exports.OCRFile = async (req, res, next) => {
 
     res.status(202).json({
       message: 'success, ocr-file updated.',
+      file_id: updatedFileId,
     });
   } catch (error) {
     console.error(

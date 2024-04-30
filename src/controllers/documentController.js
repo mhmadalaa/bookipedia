@@ -44,6 +44,7 @@ exports.createDocument = catchAsync(async (req, res, next) => {
   if (applyAI.message === 'error') {
     console.error(
       '✗ There is an error while sending process document file request to ai-api',
+      `\n✗ Error: ${applyAI.error}`,
     );
   } else if (applyAI.message === 'success') {
     console.log('AI start processing the uploaded document...');
