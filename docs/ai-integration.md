@@ -35,7 +35,7 @@ Text-To-Speech:\
 ➥ ai: convert to speech, in row-audio format, stream it to backend, and backend the stream it back to flutter
 
 Delete File:\
-➥ user: when a user delete a document or admin delete a book
+➥ user: when a user delete a document or admin delete a book\
 ➥ backend: extract the acual file_id and sent it to ai to delete the file embeddings for that id\
 ➥ ai: delete the embeddings.
 
