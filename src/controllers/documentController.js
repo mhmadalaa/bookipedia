@@ -43,17 +43,9 @@ exports.createDocument = catchAsync(async (req, res, next) => {
   // and for fileTypeController that add a file type for each file_id
   req.fileType = 'document';
   req.fileTypeId = document._id;
+  
   fileTypeController.addFileType(req);
-
-  const applyAI = await AI_APIController.addFileToAI(req);
-  if (applyAI.message === 'error') {
-    console.error(
-      '✗ There is an error while sending process document file request to ai-api',
-      `\n✗ Error: ${applyAI.error}`,
-    );
-  } else if (applyAI.message === 'success') {
-    console.log('AI start processing the uploaded document...');
-  }
+  await AI_APIController.addFileToAI(req);
 
   res.status(202).json({
     message: 'sucess',

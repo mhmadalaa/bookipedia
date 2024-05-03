@@ -69,16 +69,9 @@ exports.createBook = async (req, res, next) => {
     // and for fileTypeController that add a file type for each file_id
     req.fileType = 'book';
     req.fileTypeId = book._id;
+    
     fileTypeController.addFileType(req);
-
-    const applyAI = await AI_APIController.addFileToAI(req);
-    if (applyAI.message === 'error') {
-      console.error(
-        '✗ There is an error while sending process book file request to ai-api',
-      );
-    } else if (applyAI.message === 'success') {
-      console.log('AI start processing the uploaded book...');
-    }
+    await AI_APIController.addFileToAI(req);
 
     res.status(201).json({
       message: 'Book was successfully created',

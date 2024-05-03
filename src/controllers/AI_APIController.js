@@ -42,13 +42,15 @@ exports.addFileToAI = async (req) => {
   const url = `${BACKEND}/ai-api/file`;
 
   try {
-    const response = await axios.post(
+    await axios.post(
       `${AI_API}/add_document/${file_id}?url=${url}/${file_id}?lib_doc=${lib_doc}`,
     );
 
-    return { message: 'success', data: response.data };
+    console.log(`↪ AI start processing the uploaded file ${file_id} ✔`);
   } catch (error) {
-    return { message: 'error', error: error.message };
+    console.error(
+      `✗ There is an error while sending process file ${file_id} request to ai-api!!`,
+    );
   }
 };
 
@@ -63,9 +65,11 @@ exports.deleteAIFile = async (fileId) => {
     // delete the associated entities if the file deleted from our api
     await FileTypeModel.deleteOne({ file_id: fileId });
 
-    console.log(`file ${fileId} deleted from AI successfully`);
+    console.log(`↪ file ${fileId} deleted from AI successfully ✔`);
   } catch (error) {
-    console.error('✗ Error while sending delete file request to ai-api');
+    console.error(
+      `✗ Error while sending delete file ${fileId} request to ai-api!!`,
+    );
   }
 };
 
@@ -133,7 +137,7 @@ exports.updateChatSummary = async (req, res, next) => {
       chat_summary: req.body.chat_summary,
     });
 
-    console.log('↪ chat summary update after an ai-question ✔');
+    console.log('↪ chat summary update after ai-question ✔');
 
     res.status(202).json({
       message: 'success, chat summary updated.',
@@ -179,11 +183,11 @@ exports.aiApplied = async (req, res, next) => {
     console.log(`↪ file ${file_id} is marked that ai applied to it ✔`);
 
     res.status(202).json({
-      message: 'success, file is marked that ai applied to it',
+      message: `success, file ${file_id} is marked that ai applied to it`,
     });
   } catch (error) {
     console.error(
-      '✗ There is an error while mark if ai is applied to a file!I\n',
+      '✗ There is an error while mark if ai is applied to a file!!\n',
       error.message,
     );
 
