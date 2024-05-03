@@ -25,31 +25,53 @@ exports.askQuestion = catchAsync(async (req, res) => {
     doc_ids: [chat.file_id.toString()],
   };
 
-  axios
-    .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
-      params: queryParams,
-      data: dataToSend,
-    })
-    .then(async (response) => {
+  try {
+    const response = axios.get(
+      `${AI_API}/chat_response/${req.chat_id.toString()}`,
+      {
+        params: queryParams,
+        data: dataToSend,
+        responseType: 'stream',
+      },
+    );
+
+    // set the response headers to the text stream
+    res.setHeader('Content-Type', 'text/plain');
+
+    // stream the response to client
+    response.data.pipe(res);
+
+    // save the response chuncks into variable
+    let data = '';
+    response.data.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    // when the stream is ended save the response chuncks to database
+    response.data.end('end', async () => {
       await Question.create({
         question: req.body.question,
-        answer: response.data,
+        answer: data,
         chat_id: req.chat_id,
         user: req.user._id,
         createdAt: Date.now(),
       });
+    });
 
-      res.status(200).json({
-        message: 'success',
-        data: response.data,
-      });
-    })
-    .catch((error) => {
-      res.status(404).json({
-        message: 'fail to connect to ai api',
-        error: error.message,
+    response.data.on('error', (err) => {
+      console.error('✗ Error streaming response data:', err);
+      res.status(500).json({
+        message: '✗ Error while streaming the question response',
+        error: err.message,
       });
     });
+  } catch (error) {
+    console.error('✗ Error making a question request to ai-api:', error);
+    res.status(500).json({
+      message: '✗ Failed to send a question request to ai-api',
+      error: error.message,
+    });
+  }
 });
 
 exports.reteriveChat = catchAsync(async (req, res) => {
