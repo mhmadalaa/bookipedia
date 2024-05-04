@@ -34,16 +34,20 @@ exports.askQuestion = catchAsync(async (req, res) => {
       .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
         params: queryParams,
         data: dataToSend,
+        responseType: 'stream',
       })
       .then(async (response) => {
         // accumulate the response data to a buffer list
-        bufferStream.append(response.data);
+        response.data.on('data', (chunk) => {
+          // Append each chunk to the buffer
+          bufferStream.append(Buffer.from(chunk));
+        });
 
         // pipe the response stream to client
         await pipeline(response.data, res);
 
         // after piping all the data to user convert the accumulated data to a string
-        const answer = bufferStream.toString();
+        const answer = bufferStream.toString('ascii');
 
         await Question.create({
           question: req.body.question,
