@@ -5,6 +5,8 @@ const AppError = require('../utils/appError');
 const Book = require('../models/BookModel');
 const Document = require('./../models/documentModel');
 const Chat = require('./../models/chatModel');
+const { pipeline } = require('node:stream/promises');
+const { BufferListStream } = require('bl');
 const AI_API = process.env.AI_API;
 
 exports.askQuestion = catchAsync(async (req, res) => {
@@ -26,49 +28,54 @@ exports.askQuestion = catchAsync(async (req, res) => {
   };
 
   try {
-    const response = axios.get(
-      `${AI_API}/chat_response/${req.chat_id.toString()}`,
-      {
+    axios
+      .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
         params: queryParams,
         data: dataToSend,
-        responseType: 'stream',
-      },
-    );
+      })
+      .then(async (response) => {
+        // Create a BufferListStream to accumulate the data
+        const bufferStream = new BufferListStream(response.data);
 
-    // set the response headers to the text stream
-    res.setHeader('Content-Type', 'text/plain');
+        // pipe the response stream to client
+        await pipeline(response.data, res);
 
-    // stream the response to client
-    response.data.pipe(res);
+        // after piping all the data to user convert the accumulated data to a string
+        const answer = bufferStream.toString();
 
-    // save the response chuncks into variable
-    let data = '';
-    response.data.on('data', (chunk) => {
-      data += chunk;
-    });
-
-    // when the stream is ended save the response chuncks to database
-    response.data.end('end', async () => {
-      await Question.create({
-        question: req.body.question,
-        answer: data,
-        chat_id: req.chat_id,
-        user: req.user._id,
-        createdAt: Date.now(),
+        await Question.create({
+          question: req.body.question,
+          answer: answer,
+          chat_id: req.chat_id,
+          user: req.user._id,
+          createdAt: Date.now(),
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          res.status(error.response.status).json({
+            message: `✗ AI API responded with status ${error.response.status}`,
+            error: error.message,
+          });
+        } else if (error.request) {
+          // The request was made but no response was received
+          res.status(500).json({
+            message: '✗ No response from AI API',
+            error: error.message,
+          });
+        } else {
+          // Something happened in setting up the request that triggered an error
+          res.status(500).json({
+            message: '✗ Error while sending request to AI API',
+            error: error.message,
+          });
+        }
       });
-    });
-
-    response.data.on('error', (err) => {
-      console.error('✗ Error streaming response data:', err);
-      res.status(500).json({
-        message: '✗ Error while streaming the question response',
-        error: err.message,
-      });
-    });
   } catch (error) {
-    console.error('✗ Error making a question request to ai-api:', error);
+    console.error('✗ Error while answering a chat question', error);
     res.status(500).json({
-      message: '✗ Failed to send a question request to ai-api',
+      message: '✗ Error while answering a chat question',
       error: error.message,
     });
   }
