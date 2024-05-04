@@ -27,6 +27,8 @@ exports.askQuestion = catchAsync(async (req, res) => {
     doc_ids: [chat.file_id.toString()],
   };
 
+  const bufferStream = new BufferListStream();
+
   try {
     axios
       .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
@@ -35,7 +37,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
       })
       .then(async (response) => {
         // Create a BufferListStream to accumulate the data
-        const bufferStream = new BufferListStream(response.data);
+        bufferStream.append(response.data);
 
         // pipe the response stream to client
         await pipeline(response.data, res);
