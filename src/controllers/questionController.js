@@ -36,7 +36,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
         data: dataToSend,
       })
       .then(async (response) => {
-        // Create a BufferListStream to accumulate the data
+        // accumulate the response data to a buffer list
         bufferStream.append(response.data);
 
         // pipe the response stream to client
