@@ -2,6 +2,7 @@ const DocumentModel = require('./../models/documentModel');
 const catchAsync = require('./../utils/catchAsync');
 const pdfService = require('./../services/pdfService');
 const AI_APIController = require('./../controllers/AI_APIController');
+const fileTypeController = require('./../controllers/fileTypeController');
 const multer = require('multer');
 const path = require('path');
 
@@ -38,16 +39,13 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     createdAt: Date.now(),
   });
 
+  // add `req.fileType` to identify to ai-api if the file may need to apply ocr or not
+  // and for fileTypeController that add a file type for each file_id
   req.fileType = 'document';
-
-  const applyAI = await AI_APIController.addFileToAI(req);
-  if (applyAI.message === 'error') {
-    console.error(
-      '✗ There is an error while sending process document file request to ai-api',
-    );
-  } else if (applyAI.message === 'success') {
-    console.log('AI start processing the uploaded document...');
-  }
+  req.fileTypeId = document._id;
+  
+  fileTypeController.addFileType(req);
+  await AI_APIController.addFileToAI(req);
 
   res.status(202).json({
     message: 'sucess',
@@ -84,6 +82,7 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
   }
 
   req.fileId = document.file_id;
+  await AI_APIController.deleteAIFile(document.file_id);
   pdfService.deleteFile(req, res, next);
   res.status(204).json({
     message: 'document deleted successfully',

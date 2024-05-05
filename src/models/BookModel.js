@@ -34,6 +34,10 @@ const BookSchema = new mongoose.Schema({
   },
   image_url  :String ,
   impage_name :String ,
+  aiApplied: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     required: true,

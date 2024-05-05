@@ -6,6 +6,7 @@ const { uploadImage, deleteImage } = require('../services/imageService');
 const BookModel = require('../models/BookModel');
 const User = require('../models/userModel');
 const AI_APIController = require('./../controllers/AI_APIController');
+const fileTypeController = require('./../controllers/fileTypeController');
 const path = require('path');
 
 const multer = require('multer');
@@ -64,16 +65,13 @@ exports.createBook = async (req, res, next) => {
       createdAt: Date.now(),
     });
 
+    // add `req.fileType` to identify to ai-api if the file may need to apply ocr or not
+    // and for fileTypeController that add a file type for each file_id
     req.fileType = 'book';
-
-    const applyAI = await AI_APIController.addFileToAI(req);
-    if (applyAI.message === 'error') {
-      console.error(
-        '✗ There is an error while sending process book file request to ai-api',
-      );
-    } else if (applyAI.message === 'success') {
-      console.log('AI start processing the uploaded book...');
-    }
+    req.fileTypeId = book._id;
+    
+    fileTypeController.addFileType(req);
+    await AI_APIController.addFileToAI(req);
 
     res.status(201).json({
       message: 'Book was successfully created',
@@ -180,6 +178,7 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   }
 
   await deleteImage(book.impage_name);
+  await AI_APIController.deleteAIFile(book.file_id);
 
   req.fileId = book.file_id;
   await pdfService.deleteFile(req, res, next);

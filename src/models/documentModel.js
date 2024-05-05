@@ -13,6 +13,10 @@ const documentSchema = new mongoose.Schema({
     ref: 'User', // TODO: ref in mongoose
     required: [true, 'Document must belong to a user!'],
   },
+  aiApplied: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     required: true,
