@@ -174,9 +174,15 @@ exports.login = catchAsync(async (req, res ,next) => {
     });
   }
   if (!user.authenticated) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'Your account is not verified . Please verify your account',
+    const unverifiedUser = {
+      _id: user._id, 
+      email : user.email ,
+      authenticated :user.authenticated
+    };
+    return res.status(200).json({
+      status: 'success',
+      user : unverifiedUser ,
+      token :''
     });
   }
   if (!await user.correctPassword(password, user.password)) {
