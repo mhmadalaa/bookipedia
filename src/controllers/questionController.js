@@ -46,37 +46,22 @@ exports.askQuestion = catchAsync(async (req, res) => {
         // pipe the response stream to client
         await pipeline(response.data, res);
 
-        // after piping all the data to user convert the accumulated data to a string
-        const answer = bufferStream.toString('ascii');
+        const ai_response = bufferStream.toString();
 
+        const json_response = JSON.parse(ai_response);
+
+        const chat_answer = JSON.stringify(json_response.response);
+        const chat_sources = JSON.stringify(json_response.sources);
+
+        // save the question data to database
         await Question.create({
           question: req.body.question,
-          answer: answer,
+          answer: chat_answer.toString(),
+          sources: chat_sources.toString(),
           chat_id: req.chat_id,
           user: req.user._id,
           createdAt: Date.now(),
         });
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          res.status(error.response.status).json({
-            message: `✗ AI API responded with status ${error.response.status}`,
-            error: error.message,
-          });
-        } else if (error.request) {
-          // The request was made but no response was received
-          res.status(500).json({
-            message: '✗ No response from AI API',
-            error: error.message,
-          });
-        } else {
-          // Something happened in setting up the request that triggered an error
-          res.status(500).json({
-            message: '✗ Error while sending request to AI API',
-            error: error.message,
-          });
-        }
       });
   } catch (error) {
     console.error('✗ Error while answering a chat question', error);

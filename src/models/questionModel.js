@@ -6,7 +6,9 @@ const questionSchema = new mongoose.Schema({
     required: [true, 'there must be a question sent'],
   },
   answer: {
-    // not required from client it's ai-answer-filed
+    type: String,
+  },
+  sources: {
     type: String,
   },
   chat_id: {
