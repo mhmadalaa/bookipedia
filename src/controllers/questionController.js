@@ -80,7 +80,7 @@ exports.reteriveChat = catchAsync(async (req, res) => {
     createdAt: { $lte: req.query.createdOnBefore || Date.now() },
   })
     .limit(req.query.limit || 10)
-    .select('-__v')
+    .select('-_id -__v -chat_id')
     .sort('-createdOn');
 
   res.status(200).json({
@@ -113,7 +113,7 @@ const lastQuestions = async (req) => {
     createdAt: { $lte: Date.now() },
   })
     .limit(5)
-    .select('-__v -_id -chat_id -createdAt')
+    .select('-__v -_id -chat_id -createdAt -sources')
     .sort('-createdOn');
 
   return questions;
