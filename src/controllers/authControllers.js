@@ -174,8 +174,8 @@ exports.login = catchAsync(async (req, res ,next) => {
     });
   }
   if (!user.authenticated) {
-    return res.status(401).json({
-      status: 'fail',
+    return res.status(200).json({
+      status: 'success',
       message: 'Your account is not verified . Please verify your account',
     });
   }
