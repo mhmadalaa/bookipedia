@@ -7,6 +7,7 @@ const Document = require('./../models/documentModel');
 const Chat = require('./../models/chatModel');
 const { pipeline } = require('node:stream/promises');
 const { BufferListStream } = require('bl');
+const { json } = require('express');
 const AI_API = process.env.AI_API;
 
 exports.askQuestion = catchAsync(async (req, res) => {
@@ -20,10 +21,13 @@ exports.askQuestion = catchAsync(async (req, res) => {
   req.chat_id = chat.chat._id;
   // const last_questions = await lastQuestions(req);
 
-  const chat_answer =
-    'aho dh ally sar, oady ally kan. mlksh 78, mlksh 78 tlom 3lya. tlom 3lya azay ya sydna, o5yr bldna mhosh fy aydna, tlom 3lya azay ya sydna,o5yr bldna mhosh fy aydna, 8oly 3n ashya2 tfydna, o b3dha b8y lom 3lya';
+  const json_response = JSON.parse(process.env.MOCK_AI_RESPONSE);
+  // console.log(json_response);
 
-  const chat_sources = `[{"doc_id": "663194026c43875d7ee26590","page_no": 16,"text": "sayed darwesh"}, "https://arz.wikipedia.org/wiki/%D8%A7%D9%87%D9%88_%D8%AF%D9%87_%D8%A7%D9%84%D9%84%D9%89_%D8%B5%D8%A7%D8%B1"]`;
+  const chat_answer = JSON.stringify(json_response.response);
+  const chat_sources = JSON.stringify(json_response.sources);
+
+  // console.log(chat_answer);
 
   await Question.create({
     question: req.body.question,
@@ -34,14 +38,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
     createdAt: Date.now(),
   });
 
-  res.send(`{
-    "response": "aho dh ally sar, oady ally kan. mlksh 78, mlksh 78 tlom 3lya. tlom 3lya azay ya sydna, o5yr bldna mhosh fy aydna, tlom 3lya azay ya sydna,o5yr bldna mhosh fy aydna, 8oly 3n ashya2 tfydna, o b3dha b8y lom 3lya",
-
-"sources": "[{
-  "doc_id": "663194026c43875d7ee26590",
-  "page_no": 16,
-  "text": "sayed darwesh"
-}, "https://arz.wikipedia.org/wiki/%D8%A7%D9%87%D9%88_%D8%AF%D9%87_%D8%A7%D9%84%D9%84%D9%89_%D8%B5%D8%A7%D8%B1"]" }`);
+  res.send(process.env.MOCK_AI_RESPONSE);
 
   // const dataToSend = {
   //   user_prompt: req.body.question,
