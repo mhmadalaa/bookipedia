@@ -21,6 +21,9 @@ exports.askQuestion = catchAsync(async (req, res) => {
   req.chat_id = chat.chat._id;
   // const last_questions = await lastQuestions(req);
 
+  // pipe the response stream to client
+  await pipeline(process.env.MOCK_AI_RESPONSE, res);
+
   const json_response = JSON.parse(process.env.MOCK_AI_RESPONSE);
   // console.log(json_response);
 
@@ -38,7 +41,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
     createdAt: Date.now(),
   });
 
-  res.send(process.env.MOCK_AI_RESPONSE);
+  // res.send(process.env.MOCK_AI_RESPONSE);
 
   // const dataToSend = {
   //   user_prompt: req.body.question,
