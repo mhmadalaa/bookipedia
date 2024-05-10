@@ -29,23 +29,23 @@ exports.askQuestion = catchAsync(async (req, res) => {
 
   const bufferStream = new BufferListStream();
 
-  try {
-    axios
-      .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
-        params: queryParams,
-        data: dataToSend,
-        responseType: 'stream',
-      })
-      .then(async (response) => {
-        // accumulate the response data to a buffer list
-        response.data.on('data', (chunk) => {
-          // Append each chunk to the buffer
-          bufferStream.append(Buffer.from(chunk));
-        });
+  axios
+    .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
+      params: queryParams,
+      data: dataToSend,
+      responseType: 'stream',
+    })
+    .then(async (response) => {
+      // accumulate the response data to a buffer list
+      response.data.on('data', (chunk) => {
+        // Append each chunk to the buffer
+        bufferStream.append(Buffer.from(chunk));
+      });
 
-        // pipe the response stream to client
-        await pipeline(response.data, res);
+      // pipe the response stream to client
+      await pipeline(response.data, res);
 
+      try {
         const ai_response = bufferStream.toString();
 
         const json_response = JSON.parse(ai_response);
@@ -62,14 +62,19 @@ exports.askQuestion = catchAsync(async (req, res) => {
           user: req.user._id,
           createdAt: Date.now(),
         });
+      } catch (error) {
+        console.error(
+          '✗ Error while saving the chat answer to database',
+          error,
+        );
+      }
+    })
+    .catch(function (error) {
+      res.status(500).json({
+        message: '✗ can not connect to ai-api to answer chat question',
+        error: error.message,
       });
-  } catch (error) {
-    console.error('✗ Error while answering a chat question', error);
-    res.status(500).json({
-      message: '✗ Error while answering a chat question',
-      error: error.message,
     });
-  }
 });
 
 exports.reteriveChat = catchAsync(async (req, res) => {
