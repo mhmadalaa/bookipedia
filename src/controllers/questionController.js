@@ -64,19 +64,21 @@ exports.askQuestion = catchAsync(async (req, res) => {
           chat_sources = match[2].trim();
           console.log('Before [sources]:', chat_answer);
           console.log('After [sources]:', chat_sources);
-        } else {
-          console.log('No match found.');
-        }
 
-        // save the question data to database
-        await Question.create({
-          question: req.body.question,
-          answer: chat_answer.toString(),
-          sources: chat_sources.toString(),
-          chat_id: req.chat_id,
-          user: req.user._id,
-          createdAt: Date.now(),
-        });
+          // save the question data to database
+          await Question.create({
+            question: req.body.question,
+            answer: chat_answer.toString(),
+            sources: chat_sources.toString(),
+            chat_id: req.chat_id,
+            user: req.user._id,
+            createdAt: Date.now(),
+          });
+        } else {
+          console.error(
+            '✗ Error → chat response not match the format and not saved to database',
+          );
+        }
       } catch (error) {
         console.error(
           '✗ Error while saving the chat answer to database',
@@ -86,7 +88,7 @@ exports.askQuestion = catchAsync(async (req, res) => {
     })
     .catch(function (error) {
       res.status(500).json({
-        message: '✗ can not connect to ai-api to answer chat question',
+        message: '✗ Error can not connect to ai-api to answer chat question',
         error: error.message,
       });
     });
