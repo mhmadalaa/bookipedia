@@ -48,11 +48,6 @@ exports.askQuestion = catchAsync(async (req, res) => {
       try {
         const ai_response = bufferStream.toString();
 
-        // const json_response = JSON.parse(ai_response);
-
-        // const chat_answer = JSON.stringify(json_response.response);
-        // const chat_sources = JSON.stringify(json_response.sources);
-
         const regex = /(.+?)\[sources\](.*)/s; // 's' flag enables dot to match newline
 
         const match = ai_response.match(regex);
@@ -62,8 +57,6 @@ exports.askQuestion = catchAsync(async (req, res) => {
         if (match) {
           chat_answer = match[1].trim();
           chat_sources = match[2].trim();
-          console.log('Before [sources]:', chat_answer);
-          console.log('After [sources]:', chat_sources);
 
           // save the question data to database
           await Question.create({
