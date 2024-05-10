@@ -11,35 +11,46 @@ const { json } = require('express');
 const AI_API = process.env.AI_API;
 
 exports.askQuestion = catchAsync(async (req, res) => {
-  // ai-request query parameters
-  // const queryParams = {
-  //   enable_web_retrieval: true,
-  // };
 
   const chat = await chatAndFileId(req);
 
   req.chat_id = chat.chat._id;
-  // const last_questions = await lastQuestions(req);
 
   // pipe the response stream to client
   await pipeline(process.env.MOCK_AI_RESPONSE, res);
 
-  const json_response = JSON.parse(process.env.MOCK_AI_RESPONSE);
-  // console.log(json_response);
+  try {
+    const ai_response = process.env.MOCK_AI_RESPONSE;
 
-  const chat_answer = JSON.stringify(json_response.response);
-  const chat_sources = JSON.stringify(json_response.sources);
+    const regex = /(.+?)\[sources\](.*)/s; // 's' flag enables dot to match newline
 
-  // console.log(chat_answer);
+    const match = ai_response.match(regex);
+    let chat_answer = '';
+    let chat_sources = '';
 
-  await Question.create({
-    question: req.body.question,
-    answer: chat_answer,
-    sources: chat_sources,
-    chat_id: req.chat_id,
-    user: req.user._id,
-    createdAt: Date.now(),
-  });
+    if (match) {
+      chat_answer = match[1].trim();
+      chat_sources = match[2].trim();
+      // console.log('Before [sources]:', chat_answer);
+      // console.log('After [sources]:', chat_sources);
+
+      // save the question data to database
+      await Question.create({
+        question: req.body.question,
+        answer: chat_answer.toString(),
+        sources: chat_sources.toString(),
+        chat_id: req.chat_id,
+        user: req.user._id,
+        createdAt: Date.now(),
+      });
+    } else {
+      console.error(
+        '✗ Error → chat response not match the format and not saved to database',
+      );
+    }
+  } catch (error) {
+    console.error('✗ Error while saving the chat answer to database', error);
+  }
 
   // res.send(process.env.MOCK_AI_RESPONSE);
 
