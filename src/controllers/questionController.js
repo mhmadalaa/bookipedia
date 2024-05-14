@@ -69,20 +69,16 @@ exports.askQuestion = catchAsync(async (req, res) => {
           });
         } else {
           console.error(
-            '✗ Error → chat response not match the format and not saved to database',
+            '✗ chat response not match the format and not saved to database',
           );
         }
       } catch (error) {
-        console.error(
-          '✗ Error while saving the chat answer to database',
-          error,
-        );
+        console.error('✗ can not save the chat answer to database', error);
       }
     })
     .catch(function (error) {
       res.status(500).json({
-        message: '✗ Error can not connect to ai-api to answer chat question',
-        error: error.message,
+        message: 'can not connect to ai-api to answer chat question',
       });
     });
 });
