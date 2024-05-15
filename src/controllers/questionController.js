@@ -29,47 +29,58 @@ exports.askQuestion = catchAsync(async (req, res) => {
 
   const bufferStream = new BufferListStream();
 
-  try {
-    axios
-      .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
-        params: queryParams,
-        data: dataToSend,
-        responseType: 'stream',
-      })
-      .then(async (response) => {
-        // accumulate the response data to a buffer list
-        response.data.on('data', (chunk) => {
-          // Append each chunk to the buffer
-          bufferStream.append(Buffer.from(chunk));
-        });
+  axios
+    .get(`${AI_API}/chat_response/${req.chat_id.toString()}`, {
+      params: queryParams,
+      data: dataToSend,
+      responseType: 'stream',
+    })
+    .then(async (response) => {
+      // accumulate the response data to a buffer list
+      response.data.on('data', (chunk) => {
+        // Append each chunk to the buffer
+        bufferStream.append(Buffer.from(chunk));
+      });
 
-        // pipe the response stream to client
-        await pipeline(response.data, res);
+      // pipe the response stream to client
+      await pipeline(response.data, res);
 
+      try {
         const ai_response = bufferStream.toString();
 
-        const json_response = JSON.parse(ai_response);
+        const regex = /(.+?)\[sources\](.*)/s; // 's' flag enables dot to match newline
 
-        const chat_answer = JSON.stringify(json_response.response);
-        const chat_sources = JSON.stringify(json_response.sources);
+        const match = ai_response.match(regex);
+        let chat_answer = '';
+        let chat_sources = '';
 
-        // save the question data to database
-        await Question.create({
-          question: req.body.question,
-          answer: chat_answer.toString(),
-          sources: chat_sources.toString(),
-          chat_id: req.chat_id,
-          user: req.user._id,
-          createdAt: Date.now(),
-        });
+        if (match) {
+          chat_answer = match[1].trim();
+          chat_sources = match[2].trim();
+
+          // save the question data to database
+          await Question.create({
+            question: req.body.question,
+            answer: chat_answer.toString(),
+            sources: chat_sources.toString(),
+            chat_id: req.chat_id,
+            user: req.user._id,
+            createdAt: Date.now(),
+          });
+        } else {
+          console.error(
+            '✗ chat response not match the format and not saved to database',
+          );
+        }
+      } catch (error) {
+        console.error('✗ can not save the chat answer to database', error);
+      }
+    })
+    .catch(function (error) {
+      res.status(500).json({
+        message: 'can not connect to ai-api to answer chat question',
       });
-  } catch (error) {
-    console.error('✗ Error while answering a chat question', error);
-    res.status(500).json({
-      message: '✗ Error while answering a chat question',
-      error: error.message,
     });
-  }
 });
 
 exports.reteriveChat = catchAsync(async (req, res) => {
