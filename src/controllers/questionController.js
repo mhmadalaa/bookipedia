@@ -7,11 +7,10 @@ const Document = require('./../models/documentModel');
 const Chat = require('./../models/chatModel');
 const { pipeline } = require('node:stream/promises');
 const { BufferListStream } = require('bl');
-const { json } = require('express');
+const { json, query } = require('express');
 const AI_API = process.env.AI_API;
 
 exports.askQuestion = catchAsync(async (req, res) => {
-
   const chat = await chatAndFileId(req);
 
   req.chat_id = chat.chat._id;
@@ -113,13 +112,22 @@ exports.reteriveChat = catchAsync(async (req, res) => {
     chat_id: chat.chat._id,
     createdAt: { $lte: req.query.createdOnBefore || Date.now() },
   })
-    .limit(req.query.limit || 10)
+    .limit(req.query.limit * 1 || 10)
     .select('-_id -__v -chat_id')
-    .sort('-createdOn');
+    .sort('-createdAt');
+
+  const json_questions = [];
+  for (let i = 0; i < questions.length; ++i) {
+    json_questions.push({
+      question: questions[i].question,
+      answer: questions[i].answer,
+      sources: JSON.parse(questions[i].sources),
+    });
+  }
 
   res.status(200).json({
     message: 'success',
-    data: questions,
+    data: json_questions,
   });
 });
 
