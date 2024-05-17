@@ -121,7 +121,7 @@ exports.reteriveChat = catchAsync(async (req, res) => {
     json_questions.push({
       question: questions[i].question,
       answer: questions[i].answer,
-      sources: JSON.parse(questions[i].sources),
+      sources: JSON.parse(questions[i].sources).sources,
     });
   }
 
