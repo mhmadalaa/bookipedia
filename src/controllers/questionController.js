@@ -90,13 +90,22 @@ exports.reteriveChat = catchAsync(async (req, res) => {
     chat_id: chat.chat._id,
     createdAt: { $lte: req.query.createdOnBefore || Date.now() },
   })
-    .limit(req.query.limit || 10)
+    .limit(req.query.limit * 1 || 10)
     .select('-_id -__v -chat_id')
-    .sort('-createdOn');
+    .sort('-createdAt');
+
+  const json_questions = [];
+  for (let i = 0; i < questions.length; ++i) {
+    json_questions.push({
+      question: questions[i].question,
+      answer: questions[i].answer,
+      sources: JSON.parse(questions[i].sources).sources,
+    });
+  }
 
   res.status(200).json({
     message: 'success',
-    data: questions,
+    data: json_questions,
   });
 });
 
