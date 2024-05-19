@@ -100,6 +100,7 @@ exports.reteriveChat = catchAsync(async (req, res) => {
       question: questions[i].question,
       answer: questions[i].answer,
       sources: JSON.parse(questions[i].sources).sources,
+      createdAt: questions[i].createdAt,
     });
   }
 
