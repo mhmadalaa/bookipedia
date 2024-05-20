@@ -88,7 +88,7 @@ exports.reteriveChat = catchAsync(async (req, res) => {
 
   const questions = await Question.find({
     chat_id: chat.chat._id,
-    createdAt: { $lte: req.query.createdOnBefore || Date.now() },
+    createdAt: { $lt: req.query.createdOnBefore || Date.now() },
   })
     .limit(req.query.limit * 1 || 10)
     .select('-_id -__v -chat_id')
