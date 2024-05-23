@@ -1,4 +1,6 @@
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 const axios = require('axios');
 
 const catchAsync = require('./../utils/catchAsync');
@@ -10,21 +12,23 @@ exports.textToSpeech = catchAsync(async (req, res) => {
     text: req.body.text,
   };
 
-  axios
-    .get(`${AI_API}/tts`, {
-      data: dataToSend,
-      responseType: 'stream',
-    })
-    .then((response) => {
-      // Set the appropriate headers for the raw audio response
-      res.setHeader('Content-Type', 'audio/raw');
+  try {
+    const audioPath = path.join(__dirname, '../public', 'test.raw'); // Adjust path to 'test.raw' in the 'public' directory
 
-      // Pipe the audio stream to the response
-      response.data.pipe(res);
-    })
-    .catch((error) => {
-      res.status(404).json({
-        message: 'Error occured while applying text to speech',
-      });
+    console.log('Checking file...');
+    const stat = fs.statSync(audioPath);
+    console.log('File exists, streaming audio...');
+
+    res.writeHead(200, {
+      'Content-Type': 'audio/wav', // Set the appropriate MIME type for the raw audio
+      'Content-Length': stat.size,
     });
+
+    const readStream = fs.createReadStream(audioPath);
+    readStream.pipe(res);
+  } catch (error) {
+    res.status(404).json({
+      message: 'Error occured while applying text to speech',
+    });
+  }
 });
