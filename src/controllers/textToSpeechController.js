@@ -13,7 +13,7 @@ exports.textToSpeech = catchAsync(async (req, res) => {
   };
 
   try {
-    const audioPath = path.join(__dirname, '../public', 'test.raw'); // Adjust path to 'test.raw' in the 'public' directory
+    const audioPath = path.join(__dirname, '../public', 'synthesize_audio_from_text.raw'); // Adjust path to 'test.raw' in the 'public' directory
 
     console.log('Checking file...');
     const stat = fs.statSync(audioPath);
