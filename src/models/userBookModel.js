@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const userBookSchema = new mongoose.Schema({
-  file_id: {
+  book_id: {
     type: mongoose.Schema.ObjectId,
     required: true,
   },
@@ -13,6 +13,10 @@ const userBookSchema = new mongoose.Schema({
   progress_page: {
     type: Number,
     default: 0,
+  },
+  book_pages: {
+    type: Number,
+    required: true,
   },
   active_date: {
     type: Date,
