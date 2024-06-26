@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.use(authController.isLogin);
 
+router.route('/recent-reading').get(progressController.recentReadingActivitiy);
+
 router
   .route('/:id')
   .patch(
