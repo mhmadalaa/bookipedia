@@ -5,6 +5,7 @@ const pdfService = require('../services/pdfService');
 const { uploadImage, deleteImage } = require('../services/imageService');
 const BookModel = require('../models/BookModel');
 const User = require('../models/userModel');
+const userBookModel = require('../models/userBookModel');
 const AI_APIController = require('./../controllers/AI_APIController');
 const fileTypeController = require('./../controllers/fileTypeController');
 const path = require('path');
@@ -69,7 +70,7 @@ exports.createBook = async (req, res, next) => {
     // and for fileTypeController that add a file type for each file_id
     req.fileType = 'book';
     req.fileTypeId = book._id;
-    
+
     fileTypeController.addFileType(req);
     await AI_APIController.addFileToAI(req);
 
@@ -111,12 +112,23 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
 });
 
 exports.getCertainBook = catchAsync(async (req, res, next) => {
-  const book = await BookModel.findById(req.params.id);
+  const book = await BookModel.findById(req.params.id).lean();
+
   if (!book) {
     return res.status(404).json({
       message: 'No book found',
     });
   }
+
+  const userBook = await userBookModel.findOne({
+    book_id: book._id,
+    user: req.user._id,
+  });
+
+  book.progress_page = userBook.progress_page;
+  book.progress_percentage = parseFloat(
+    (userBook.progress_page / userBook.book_pages).toFixed(2),
+  );
 
   res.status(200).json({
     book,
@@ -189,9 +201,6 @@ exports.deleteBook = catchAsync(async (req, res, next) => {
   });
 });
 
-// FIXME: we have a bug right now with the way we create add the book to user
-//        when delete the book we supposed to loop over all user book-lists and delete it!,
-//        so we need to separate it and create a new model for user_books
 exports.addUserBook = catchAsync(async (req, res, next) => {
   const book = await BookModel.findById(req.params.id);
 
@@ -201,15 +210,15 @@ exports.addUserBook = catchAsync(async (req, res, next) => {
     });
   }
 
-  const user = await User.findOneAndUpdate(
-    { _id: req.user._id },
-    { $addToSet: { books: req.params.id } },
-    { new: true },
-  );
+  await userBookModel.create({
+    book_id: book._id,
+    user: req.user._id,
+    book_pages: book.pages,
+    createdAt: Date.now(),
+  });
 
   res.status(202).json({
     message: 'Book is added successfully to the user',
-    booksList: user.books,
   });
 });
 
@@ -222,31 +231,31 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
     });
   }
 
-  const user = await User.findOneAndUpdate(
-    { _id: req.user._id },
-    { $pull: { books: req.params.id } },
-    { new: true },
-  );
+  await userBookModel.findOneAndDelete({
+    book_id: book._id,
+    user: req.user._id,
+  });
 
   res.status(202).json({
     message: 'Book is removed successfully from the user',
-    booksList: user.books,
   });
 });
 
 exports.getUserBooks = catchAsync(async (req, res, next) => {
-  const bookList = req.user.books;
+  const books = await userBookModel
+    .find({ user: req.user._id })
+    .sort('-active_date')
+    .lean();
 
-  const userBooks = [];
-  for (const book_id of bookList) {
-    const book = await BookModel.findById(book_id);
-
-    if (book) userBooks.push(book);
+  for (let i = 0; i < books.length; ++i) {
+    books[i].progress_percentage = parseFloat(
+      (books[i].progress_page / books[i].book_pages).toFixed(2),
+    );
   }
 
   res.status(200).json({
     message: 'success, all user books',
-    userBooks,
+    userBooks: books,
   });
 });
 

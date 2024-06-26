@@ -1,7 +1,7 @@
 const DocumentModel = require('../models/documentModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-// const UserBookModel = require('../models/userBookModel');
+const UserBookModel = require('../models/userBookModel');
 
 exports.updateProgress = catchAsync(async (req, res, next) => {
   if (req?.query?.type === 'document') {
@@ -19,20 +19,22 @@ exports.updateProgress = catchAsync(async (req, res, next) => {
       progress_page: page,
     });
   } else if (req?.query?.type === 'book') {
-    // const page = await UserBookModel.findByIdAndUpdate(
-    //   {
-    //     _id: req.params.id,
-    //     user: req.user._id,
-    //   },
-    //   { progress_page: req.body.page },
-    //   { new: true },
-    // );
+    const book = await UserBookModel.findOneAndUpdate(
+      {
+        book_id: req.params.id,
+        user: req.user._id,
+      },
+      { progress_page: req.body.page, active_date: Date.now() },
+      { new: true },
+    );
 
     res.status(200).json({
       status: 'success',
       message: 'book progress',
-      // progress_page: page,
-      // progress_percentage: page /
+      progress_page: book.progress_page,
+      progress_percentage: parseFloat(
+        (book.progress_page / book.book_pages).toFixed(2),
+      ),
     });
   }
 });

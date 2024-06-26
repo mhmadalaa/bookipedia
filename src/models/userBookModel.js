@@ -30,6 +30,9 @@ const userBookSchema = new mongoose.Schema({
   },
 });
 
+// add compound index to ensure the uniqueness of the compination of book and user
+userBookSchema.index({ book_id: 1, user: 1 }, { unique: true });
+
 const UserBook = mongoose.model('user-book', userBookSchema);
 
 module.exports = UserBook;
