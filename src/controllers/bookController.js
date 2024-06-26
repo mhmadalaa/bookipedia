@@ -103,7 +103,21 @@ exports.uploadCoverImage = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllBooks = catchAsync(async (req, res, next) => {
-  const books = await BookModel.find();
+  const books = await BookModel.find().lean();
+  
+  // to mark in the library if book in the favorites of the user or not
+  for (let i = 0; i < books.length; ++i) {
+    const userBook = await userBookModel.findOne({
+      user: req.user._id,
+      book: books[i]._id,
+    });
+
+    if (userBook !== null) {
+      books[i].favourite = true;
+    } else {
+      books[i].favourite = false;
+    }
+  }
 
   res.status(200).json({
     length: books.length,
