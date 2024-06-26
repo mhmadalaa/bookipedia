@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
 const userBookSchema = new mongoose.Schema({
-  book_id: {
+  book: {
     type: mongoose.Schema.ObjectId,
+    ref: 'Book',
     required: true,
   },
   user: {
     type: mongoose.Schema.ObjectId,
-    ref: 'User', // TODO: ref in mongoose
+    ref: 'User',
     required: [true, 'Document must belong to a user!'],
   },
   progress_page: {
@@ -31,7 +32,7 @@ const userBookSchema = new mongoose.Schema({
 });
 
 // add compound index to ensure the uniqueness of the compination of book and user
-userBookSchema.index({ book_id: 1, user: 1 }, { unique: true });
+userBookSchema.index({ book: 1, user: 1 }, { unique: true });
 
 const UserBook = mongoose.model('user-book', userBookSchema);
 

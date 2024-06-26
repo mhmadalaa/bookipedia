@@ -121,7 +121,7 @@ exports.getCertainBook = catchAsync(async (req, res, next) => {
   }
 
   const userBook = await userBookModel.findOne({
-    book_id: book._id,
+    book: book._id,
     user: req.user._id,
   });
 
@@ -211,7 +211,7 @@ exports.addUserBook = catchAsync(async (req, res, next) => {
   }
 
   await userBookModel.create({
-    book_id: book._id,
+    book: book._id,
     user: req.user._id,
     book_pages: book.pages,
     createdAt: Date.now(),
@@ -232,7 +232,7 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
   }
 
   await userBookModel.findOneAndDelete({
-    book_id: book._id,
+    book: book._id,
     user: req.user._id,
   });
 
@@ -244,6 +244,7 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
 exports.getUserBooks = catchAsync(async (req, res, next) => {
   const books = await userBookModel
     .find({ user: req.user._id })
+    .populate('book')
     .sort('-active_date')
     .lean();
 

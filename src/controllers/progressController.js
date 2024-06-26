@@ -21,7 +21,7 @@ exports.updateProgress = catchAsync(async (req, res, next) => {
   } else if (req?.query?.type === 'book') {
     const book = await UserBookModel.findOneAndUpdate(
       {
-        book_id: req.params.id,
+        book: req.params.id,
         user: req.user._id,
       },
       { progress_page: req.body.page, active_date: Date.now() },
