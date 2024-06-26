@@ -17,6 +17,16 @@ const documentSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  progress_page: {
+    type: Number,
+    default: 0,
+  },
+  active_date: {
+    type: Date,
+    default: function () {
+      return this.createdAt;
+    },
+  },
   createdAt: {
     type: Date,
     required: true,

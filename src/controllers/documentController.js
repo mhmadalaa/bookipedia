@@ -37,13 +37,14 @@ exports.createDocument = catchAsync(async (req, res, next) => {
     file_id: req.fileId,
     user: req.user._id,
     createdAt: Date.now(),
+    active_date: Date.now(),
   });
 
   // add `req.fileType` to identify to ai-api if the file may need to apply ocr or not
   // and for fileTypeController that add a file type for each file_id
   req.fileType = 'document';
   req.fileTypeId = document._id;
-  
+
   fileTypeController.addFileType(req);
   await AI_APIController.addFileToAI(req);
 
@@ -92,7 +93,9 @@ exports.deleteDocument = catchAsync(async (req, res, next) => {
 exports.getAllDocuments = catchAsync(async (req, res, next) => {
   const user = req.user._id;
 
-  const documents = await DocumentModel.find({ user: user });
+  const documents = await DocumentModel.find({ user: user }).sort(
+    '-active_date',
+  );
 
   res.status(200).json({
     length: documents.length,
