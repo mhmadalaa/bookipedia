@@ -1,3 +1,3 @@
 # Database design for the application
 
-![database](https://github.com/mhmadalaa/bookipedia/assets/68995755/eb4b7a9a-fcfd-4e25-a7d6-b218baa60d76)
+![database](https://github.com/mhmadalaa/bookipedia/assets/68995755/153f55db-f3f1-44b5-8616-e9301ce1cb01)

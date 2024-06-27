@@ -1,25 +1,23 @@
 const mongoose = require('mongoose');
 
-const documentSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  file_id: {
+const userBookSchema = new mongoose.Schema({
+  book: {
     type: mongoose.Schema.ObjectId,
+    ref: 'Book',
+    required: true,
   },
   user: {
     type: mongoose.Schema.ObjectId,
-    ref: 'User', // TODO: ref in mongoose
+    ref: 'User',
     required: [true, 'Document must belong to a user!'],
-  },
-  aiApplied: {
-    type: Boolean,
-    default: false,
   },
   progress_page: {
     type: Number,
     default: 0,
+  },
+  book_pages: {
+    type: Number,
+    required: true,
   },
   active_date: {
     type: Date,
@@ -33,6 +31,9 @@ const documentSchema = new mongoose.Schema({
   },
 });
 
-const DocumentModel = mongoose.model('Document', documentSchema);
+// add compound index to ensure the uniqueness of the compination of book and user
+userBookSchema.index({ book: 1, user: 1 }, { unique: true });
 
-module.exports = DocumentModel;
+const UserBook = mongoose.model('user-book', userBookSchema);
+
+module.exports = UserBook;

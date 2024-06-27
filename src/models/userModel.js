@@ -41,9 +41,9 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
-  otp :String ,
-  otpExpires :Date ,
-  createdAt :Date ,
+  otp: String,
+  otpExpires: Date,
+  createdAt: Date,
   active: {
     type: Boolean,
     default: true,
@@ -56,12 +56,6 @@ const userSchema = new mongoose.Schema({
   admin: {
     type: Boolean,
   },
-  books: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: 'Book', // TODO: ref in mongoos
-    },
-  ],
 });
 
 userSchema.pre('save', async function (next) {

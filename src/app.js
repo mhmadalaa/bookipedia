@@ -10,6 +10,7 @@ const noteRouter = require('./routers/noteRoute');
 const deployRouter = require('./routers/deployRoute');
 const adminRouter = require('./routers/adminRoute');
 const AI_APIRouter = require('./routers/AI_APIRoute');
+const progressRouter = require('./routers/progressRoute');
 
 // BACKGROUND TASKS
 require('./background_tasks/nonVerifiedUsers');
@@ -37,6 +38,7 @@ app.use('/ai', aiRouter);
 app.use('/note', noteRouter);
 app.use('/admin', adminRouter);
 app.use('/ai-api', AI_APIRouter);
+app.use('/progress', progressRouter);
 
 // deployement router managed by github-workflow
 app.use('/deploy', deployRouter);
