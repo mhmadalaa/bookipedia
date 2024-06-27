@@ -137,6 +137,7 @@ exports.recommendationBooks = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    length: parseInt(req.query.count) || 3,
     books: recommendationBooks,
   });
 });
