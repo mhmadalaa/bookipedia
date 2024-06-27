@@ -1,30 +1,26 @@
-require('dotenv').config();
-const axios = require('axios');
+const stream = require('stream');
 
+const openai = require('./../config/openaiConfig');
 const catchAsync = require('./../utils/catchAsync');
 
-const AI_API = process.env.AI_API;
-
 exports.textToSpeech = catchAsync(async (req, res) => {
-  const dataToSend = {
-    text: req.body.text,
-  };
+  const response = await openai.audio.speech.create({
+    model: 'tts-1',
+    voice: 'alloy',
+    input: req.body.text,
+  });
 
-  axios
-    .get(`${AI_API}/tts`, {
-      data: dataToSend,
-      responseType: 'stream',
-    })
-    .then((response) => {
-      // Set the appropriate headers for the raw audio response
-      res.setHeader('Content-Type', 'audio/raw');
+  // Set the appropriate headers for the response
+  res.setHeader('Content-Type', 'audio/mpeg');
+  res.setHeader('Content-Disposition', 'attachment; filename=speech.mp3');
 
-      // Pipe the audio stream to the response
-      response.data.pipe(res);
-    })
-    .catch((error) => {
-      res.status(404).json({
-        message: 'Error occured while applying text to speech',
-      });
-    });
+  // Convert the base64 audio content to a Buffer
+  const buffer = Buffer.from(await response.arrayBuffer());
+
+  // Create a readable stream from the buffer
+  const audioStream = new stream.PassThrough();
+  audioStream.end(buffer);
+
+  // Pipe the audio stream to the response
+  audioStream.pipe(res);
 });
