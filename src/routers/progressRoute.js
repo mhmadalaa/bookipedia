@@ -5,6 +5,10 @@ const router = express.Router();
 
 router.use(authController.isLogin);
 
+router
+  .route('/recommendation-books')
+  .get(progressController.recommendationBooks);
+
 router.route('/recent-reading').get(progressController.recentReadingActivitiy);
 
 router
