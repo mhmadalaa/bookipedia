@@ -4,7 +4,6 @@ const AppError = require('../utils/appError');
 const pdfService = require('../services/pdfService');
 const { uploadImage, deleteImage } = require('../services/imageService');
 const BookModel = require('../models/BookModel');
-const User = require('../models/userModel');
 const userBookModel = require('../models/userBookModel');
 const AI_APIController = require('./../controllers/AI_APIController');
 const fileTypeController = require('./../controllers/fileTypeController');
@@ -224,12 +223,21 @@ exports.addUserBook = catchAsync(async (req, res, next) => {
     });
   }
 
-  await userBookModel.create({
+  const newUserBook = await userBookModel.create({
     book: book._id,
     user: req.user._id,
     book_pages: book.pages,
     createdAt: Date.now(),
   });
+
+  // Increment the book recommendation factor by 0.1
+  if (newUserBook) {
+    await BookModel.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { recommendation: 0.1 } },
+      { new: true },
+    );
+  }
 
   res.status(202).json({
     message: 'Book is added successfully to the user',
@@ -245,10 +253,19 @@ exports.removeUserBook = catchAsync(async (req, res, next) => {
     });
   }
 
-  await userBookModel.findOneAndDelete({
+  const deletedUserBook = await userBookModel.findOneAndDelete({
     book: book._id,
     user: req.user._id,
   });
+
+  // Decrement the recommendation factor by 0.1
+  if (deletedUserBook) {
+    await BookModel.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { recommendation: -0.1 } },
+      { new: true },
+    );
+  }
 
   res.status(202).json({
     message: 'Book is removed successfully from the user',

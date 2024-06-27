@@ -67,6 +67,13 @@ exports.askQuestion = catchAsync(async (req, res) => {
             user: req.user._id,
             createdAt: Date.now(),
           });
+
+          // Increment the book recommendation factor by 0.1
+          await Book.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { recommendation: 0.1 } },
+            { new: true },
+          );
         } else {
           console.error(
             '✗ chat response not match the format and not saved to database',

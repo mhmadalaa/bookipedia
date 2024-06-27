@@ -38,6 +38,10 @@ const BookSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  recommendation: {
+    type: Number,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     required: true,
@@ -46,7 +50,7 @@ const BookSchema = new mongoose.Schema({
 
 BookSchema.pre('save' ,function(next) {
   try {
-    this.slug = this.isModified('title') ? slugify(this.title , {lower :true}) : this.slug;
+    this.slug = (this.isModified('title') ? slugify(this.title , {lower :true}) : this.slug);
     this.category = this.isModified('category') ? this.category.toLowerCase() : this.category;
     next();
   }
