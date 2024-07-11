@@ -21,8 +21,6 @@ exports.summarizeQuestion = catchAsync(async (req, res) => {
 
   const bufferStream = new BufferListStream();
 
-  // @app.get("/summarize_pages/{doc_id}")
-  // async def summarize_pages(doc_id: str, start_page: int, end_page: int):
   axios
     .get(`${AI_API}/summarize_pages/${file.file_id.toString()}`, {
       data: dataToSend,
