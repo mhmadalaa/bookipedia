@@ -30,7 +30,11 @@ router
 
 router
   .route('/text-summarization/:id')
-  .get(authController.isLogin, textSummarizationController.summarizeQuestion);
+  .get(
+    authController.isLogin,
+    textSummarizationController.enforceQueryParams,
+    textSummarizationController.summarizeQuestion,
+  );
 
 /*
 TODO: 
