@@ -3,6 +3,7 @@ const questionController = require('../controllers/questionController');
 const textToSpeechController = require('../controllers/textToSpeechController');
 const chapterSummaryController = require('../controllers/chSummaryController');
 const authController = require('./../controllers/authControllers');
+const textSummarizationController = require('../controllers/textSummarizationController');
 
 const router = express.Router();
 
@@ -25,10 +26,11 @@ router
 
 router
   .route('/tts')
-  .get(
-    authController.isLogin, 
-    textToSpeechController.textToSpeech,
-  );
+  .get(authController.isLogin, textToSpeechController.textToSpeech);
+
+router
+  .route('/text-summarization/:id')
+  .get(authController.isLogin, textSummarizationController.summarizeQuestion);
 
 /*
 TODO: 
