@@ -12,7 +12,7 @@ const AI_API = process.env.AI_API;
 exports.askQuestion = catchAsync(async (req, res) => {
   // ai-request query parameters
   const queryParams = {
-    enable_web_retrieval: true,
+    enable_web_retrieval: req.query.enable_web_retrieval === 'true' || true,
   };
 
   const chat = await chatAndFileId(req);
